@@ -2,10 +2,10 @@
 
 ## Team Members:
 
-* 
-* 
-* 
-* 
+* Vignesh Modigunta
+* Porter Jingst
+* Mustafa Tahir
+* N/A
 
 ## User stories
 
