@@ -5,7 +5,7 @@
 * Vignesh Modigunta
 * Porter Jingst
 * Mustafa Tahir
-* N/A
+* Birch Yang
 
 ## User stories
 
