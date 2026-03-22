@@ -5,8 +5,8 @@ import java.util.InputMismatchException;
 
 public class MainMenu {
 
-    private static final int EXIT_SELECTION = 4;
-    private static final int MAX_SELECTION = 4;
+    private static final int EXIT_SELECTION = 5;
+    private static final int MAX_SELECTION = 5;
 
     private BankAccount userAccount;
     private Scanner keyboardInput;
@@ -21,7 +21,8 @@ public class MainMenu {
         System.out.println("1. Make a deposit");
         System.out.println("2. Make a withdraw"); 
         System.out.println("3. Check your balance"); 
-        System.out.println("4. Exit the app");
+        System.out.println("4. Close your account");
+        System.out.println("5. Exit the app");
     }
 
     public int getUserSelection(int max) {
@@ -50,6 +51,9 @@ public class MainMenu {
                 checkBalance();
                 break;
             case 4:
+                performCloseAccount();
+                break;
+            case 5:
                 System.out.println("Exiting the app. Goodbye!");
                 break;
             default:
@@ -103,6 +107,16 @@ public class MainMenu {
         }
         userAccount.withdraw(withdrawAmount);
         System.out.println("Withdrawal successful!");
+    }
+
+     public void performCloseAccount() {
+        if (userAccount.isClosed()) {
+            System.out.println("This account is already closed.");
+            return;
+        }
+
+        userAccount.closeAccount();
+        System.out.println("Your account has been closed.");
     }
 
     public void run() {
