@@ -21,7 +21,8 @@ public class MainMenu {
         System.out.println("1. Make a deposit");
         System.out.println("2. Make a withdraw"); 
         System.out.println("3. Check your balance"); 
-        System.out.println("4. Exit the app");
+        System.out.println("4. Check transaction history"); 
+        System.out.println("5. Exit the app");
     }
 
     public int getUserSelection(int max) {
@@ -50,6 +51,9 @@ public class MainMenu {
                 checkBalance();
                 break;
             case 4:
+                viewTransactions();
+                break;
+            case 5:
                 System.out.println("Exiting the app. Goodbye!");
                 break;
             default:
@@ -103,6 +107,17 @@ public class MainMenu {
         }
         userAccount.withdraw(withdrawAmount);
         System.out.println("Withdrawal successful!");
+    }
+
+    public void viewTransactions() {
+        System.out.println("Transaction history:");
+        for(double value : userAccount.getTransactions()) {
+            if(value >= 0) {
+                System.out.println("Deposit: " + value);
+            } else {
+                System.out.println("Withdraw: " + value * -1);
+            }
+        }
     }
 
     public void run() {
