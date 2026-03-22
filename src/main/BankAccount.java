@@ -6,10 +6,16 @@ public class BankAccount {
 
     private double balance;
     private ArrayList<Double> transactions;
+    private static int accountID = 0;
 
     public BankAccount() {
         this.balance = 0;
         this.transactions = new ArrayList<Double>();
+        BankAccount.accountID++;
+    }
+
+    public int getID() {
+        return BankAccount.accountID;
     }
 
     public void deposit(double amount) {
