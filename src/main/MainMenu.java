@@ -5,8 +5,8 @@ import java.util.InputMismatchException;
 
 public class MainMenu {
 
-    private static final int EXIT_SELECTION = 4;
-    private static final int MAX_SELECTION = 4;
+    private static final int EXIT_SELECTION = 5;
+    private static final int MAX_SELECTION = 5;
 
     private BankAccount userAccount;
     private Scanner keyboardInput;
