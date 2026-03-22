@@ -1,1 +1,3 @@
-# This the branch where the Deposit and Withdraw features were addded. Vignesh is currently working on this branch and looking to implement "Separation of Concerns" where decoupling, modularity, and encapsulation can all happen at once. As of now, the BankAccount and MainMenu files have been appended, committed, and pushed. 
+# Withdraw and Deposit Branch
+
+This the branch where the Deposit and Withdraw features were addded. Vignesh is currently working on this branch and looking to implement "Separation of Concerns" where decoupling, modularity, and encapsulation can all happen at once. As of now, the BankAccount and MainMenu files have been appended, committed, and pushed. 
