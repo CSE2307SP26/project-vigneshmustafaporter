@@ -8,11 +8,12 @@ public class MainMenu {
     private static final int EXIT_SELECTION = 4;
     private static final int MAX_SELECTION = 4;
 
-    private BankAccount userAccount;
+    
+    private BankOperations operations; 
     private Scanner keyboardInput;
 
     public MainMenu() {
-        this.userAccount = new BankAccount();
+        this.operations = new BankOperations();
         this.keyboardInput = new Scanner(System.in);
     }
 
@@ -41,13 +42,13 @@ public class MainMenu {
     public void processInput(int selection) {
         switch (selection) {
             case 1:
-                performDeposit();
+                operations.performDeposit();
                 break;
             case 2:
-                performWithDraw();
+                operations.performWithDraw();
                 break;
             case 3:
-                checkBalance();
+                operations.checkBalance();
                 break;
             case 4:
                 System.out.println("Exiting the app. Goodbye!");
@@ -58,52 +59,6 @@ public class MainMenu {
         // we want to break after user selects an option 
     }
 
-    public void performDeposit() {
-        double depositAmount = -1;
-        while(depositAmount < 0) {
-            System.out.print("How much would you like to deposit: ");
-            try {
-                depositAmount = keyboardInput.nextDouble();
-                if (depositAmount < 0) {
-                    System.out.println("Please enter a non-negative amount.");
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid amount. Try again.");
-                keyboardInput.nextLine();
-            }
-        }
-        userAccount.deposit(depositAmount);
-        System.out.println("Deposit successful!");
-    }
-
-    public void checkBalance() {
-       System.out.println("Current Balance is: " + userAccount.getBalance()); 
-    }
-
-    public void performWithDraw() {
-        double withdrawAmount = 0; 
-        boolean isValid = false; 
-        while(!isValid) {
-            System.out.print("How much would you like to withdraw: ");
-            try {
-                withdrawAmount = keyboardInput.nextDouble();
-                if(withdrawAmount < 0) {
-                    System.out.println("You have entered a negative number, please try again.");
-                }
-                else if(userAccount.getBalance() < withdrawAmount) {
-                    System.out.println("You are unable to withdraw more than you already have.");
-                }
-                else {
-                    isValid = true; 
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid amount. Try again.");
-                keyboardInput.nextLine();
-            }
-        }
-        userAccount.withdraw(withdrawAmount);
-        System.out.println("Withdrawal successful!");
-    }
 
     public void run() {
         int selection = -1;
