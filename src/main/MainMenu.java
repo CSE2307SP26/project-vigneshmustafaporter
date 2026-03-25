@@ -7,6 +7,7 @@ public class MainMenu {
 
     private static final int EXIT_SELECTION = 7;
     private static final int MAX_SELECTION = 7;
+    private static boolean HAS_ADDITIONAL = false;
 
     private BankAccount userAccount1;
     private BankAccount userAccount2;
@@ -59,8 +60,12 @@ public class MainMenu {
                 viewTransactions();
                 break;
             case 5:
-                createAdditionalAccount();
-                switchAccount();
+                if (!HAS_ADDITIONAL) {
+                    createAdditionalAccount();
+                    switchAccount();
+                } else {
+                    System.out.println("You already have an additional account. Press 6 to switch.");
+                }
                 break;
             case 6:
                 switchAccount();
@@ -76,6 +81,7 @@ public class MainMenu {
 
     public void createAdditionalAccount() {
         this.userAccount2 = new BankAccount();
+        HAS_ADDITIONAL = true;
     }
 
     public void switchAccount() {
