@@ -57,6 +57,7 @@ public class BankAccountTest {
 
         assertEquals(accountTwoBalance, 20, 0.01);
         assertEquals(accountOneBalance, 10, 0.01);
+    }
 
         
     public void testTransactionHistory() {
