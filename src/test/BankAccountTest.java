@@ -4,6 +4,7 @@ import main.BankAccount;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
 
@@ -25,5 +26,16 @@ public class BankAccountTest {
         } catch (IllegalArgumentException e) {
             //do nothing, test passes
         }
+    }
+
+    @Test
+    public void testTransactionHistory() {
+        BankAccount testAccount = new BankAccount();
+        testAccount.deposit(50);
+        testAccount.withdraw(30);
+        ArrayList<Double> testTransactions = new ArrayList<Double>();
+        testTransactions.add(50.0);
+        testTransactions.add(-30.0);
+        assertEquals(testAccount.getTransactions(), testTransactions);
     }
 }
