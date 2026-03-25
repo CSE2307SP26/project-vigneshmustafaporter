@@ -6,18 +6,16 @@ public class BankAccount {
 
     private double balance;
     private ArrayList<Double> transactions;
-    private int ID;
-
-    private static int accountIDs = 0;
+    private static int accountID = 0;
 
     public BankAccount() {
         this.balance = 0;
         this.transactions = new ArrayList<Double>();
-        this.ID = ++BankAccount.accountIDs;
+        BankAccount.accountID++;
     }
 
     public int getID() {
-        return this.ID;
+        return BankAccount.accountID;
     }
 
     public void deposit(double amount) {
@@ -36,6 +34,7 @@ public class BankAccount {
         this.balance = this.balance - withdrawAmount; 
         record(-1 * withdrawAmount);
         // subtract the withdraw amount from the actual account. 
+        
     }
 
     public void record(double amount) {
