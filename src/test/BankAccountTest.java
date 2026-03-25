@@ -1,9 +1,9 @@
 package test;
 
 import main.BankAccount;
+import main.MainMenu;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
@@ -31,9 +31,9 @@ public class BankAccountTest {
     @Test
     public void testAdditionalAccountBoolean() {
         MainMenu testMenu = new MainMenu();
-        assertFalse(MainMenu.hasAdditionalAccount());
+        assertFalse(testMenu.hasAdditionalAccount());
         testMenu.createAdditionalAccount();
-        assertTrue(MainMenu.hasAdditionalAccount());
+        assertTrue(testMenu.hasAdditionalAccount());
         assertNotNull(testMenu.getSecondAccount());
     }
 

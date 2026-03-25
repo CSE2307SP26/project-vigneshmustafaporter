@@ -8,6 +8,7 @@ public class MainMenu {
     private static final int EXIT_SELECTION = 7;
     private static final int MAX_SELECTION = 7;
 
+    private boolean HAS_ADDITIONAL = false;
     private BankAccount userAccount1;
     private BankAccount userAccount2;
     private BankAccount currentAccount;
@@ -16,12 +17,6 @@ public class MainMenu {
     public MainMenu() {
         this.userAccount1 = new BankAccount();
         this.currentAccount = this.userAccount1;
-    
-    private BankOperations operations; 
-    private Scanner keyboardInput;
-
-    public MainMenu() {
-        this.operations = new BankOperations();
         this.keyboardInput = new Scanner(System.in);
     }
 
@@ -53,20 +48,24 @@ public class MainMenu {
     public void processInput(int selection) {
         switch (selection) {
             case 1:
-                operations.performDeposit();
+                performDeposit();
                 break;
             case 2:
-                operations.performWithDraw();
+                performWithDraw();
                 break;
             case 3:
-                operations.checkBalance();
+                checkBalance();
                 break;
             case 4:
                 viewTransactions();
                 break;
             case 5:
-                createAdditionalAccount();
-                switchAccount();
+                if (!HAS_ADDITIONAL) {
+                    createAdditionalAccount();
+                    switchAccount();
+                } else {
+                    System.out.println("You already have an additional account. Press 6 to switch.");
+                }
                 break;
             case 6:
                 switchAccount();
@@ -82,6 +81,7 @@ public class MainMenu {
 
     public void createAdditionalAccount() {
         this.userAccount2 = new BankAccount();
+        HAS_ADDITIONAL = true;
     }
 
     public void switchAccount() {
@@ -144,6 +144,18 @@ public class MainMenu {
                 System.out.println("Withdraw: " + value * -1);
             }
         }
+    }
+
+    public BankAccount getCurrentAccount() {
+        return this.currentAccount;
+    }
+
+    public BankAccount getSecondAccount() {
+        return this.userAccount2;
+    }
+
+    public boolean hasAdditionalAccount() {
+        return HAS_ADDITIONAL;
     }
 
     public void run() {
