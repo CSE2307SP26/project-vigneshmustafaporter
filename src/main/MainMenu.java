@@ -5,31 +5,34 @@ import java.util.InputMismatchException;
 
 public class MainMenu {
 
-    private static final int EXIT_SELECTION = 7;
-    private static final int MAX_SELECTION = 7;
+    private static final int EXIT_SELECTION = 9;
+    private static final int MAX_SELECTION = 9;
+    private static boolean HAS_ADDITIONAL = false;
 
     private BankAccount userAccount1;
     private BankAccount userAccount2;
-    private int currentAccount;
+    private BankAccount currentAccount;
     private Scanner keyboardInput;
+    private BankOperations operations; 
 
     public MainMenu() {
         this.userAccount1 = new BankAccount();
-        this.userAccount2 = new BankAccount();
-        this.currentAccount = 1;
+        this.currentAccount = this.userAccount1;
+        this.operations = new BankOperations();
         this.keyboardInput = new Scanner(System.in);
     }
 
     public void displayOptions() {
-        System.out.println("Welcome to the 237 Bank App!");
-        System.out.println("Current account: " + currentAccount);
+        System.out.println("Welcome to the 237 Bank App! You are currently using account " + this.currentAccount.getID());
         System.out.println("1. Make a deposit");
         System.out.println("2. Make a withdraw"); 
         System.out.println("3. Check your balance"); 
-        System.out.println("4. Close your account");
-        System.out.println("5. Transfer money");
+        System.out.println("4. Check transaction history"); 
+        System.out.println("5. Create additional account"); 
         System.out.println("6. Switch account");
-        System.out.println("7. Exit the app");
+        System.out.println("7. Close your account");
+        System.out.println("8. Transfer money");
+        System.out.println("9. Exit the app");
     }
 
     public int getUserSelection(int max) {
@@ -46,62 +49,62 @@ public class MainMenu {
         return selection;
     }
 
-    public BankAccount getCurrentAccount() {
-        if (currentAccount == 1) {
-            return userAccount1;
-        } else {
-            return userAccount2;
-        }
-    }
 
-    public BankAccount getAccountByChoice(int accountChoice) {
-        if (accountChoice == 1) {
-            return userAccount1;
-        } else {
-            return userAccount2;
-        }
-    }
-
-    public void switchAccount() {
-        if (currentAccount == 1) {
-            currentAccount = 2;
-        } else {
-            currentAccount = 1;
-        }
-        System.out.println("You are now using account " + currentAccount + ".");
-    }
 
     public void processInput(int selection) {
         switch (selection) {
             case 1:
-                performDeposit();
+                operations.performDeposit();
                 break;
             case 2:
-                performWithDraw();
+                operations.performWithDraw();
                 break;
             case 3:
-                checkBalance();
+                operations.checkBalance();
                 break;
             case 4:
-                performCloseAccount();
+                viewTransactions();
                 break;
+                
             case 5:
-                performTransfer();
+                if (!HAS_ADDITIONAL) {
+                    createAdditionalAccount();
+                    switchAccount();
+                } else {
+                    System.out.println("You already have an additional account. Press 6 to switch.");
+                }
                 break;
+                
             case 6:
                 switchAccount();
                 break;
             case 7:
-                System.out.println("Exiting the app. Goodbye!");
+                performCloseAccount();
                 break;
+            case 8:
+                performTransfer();
+                break;
+            case 9:
+                System.out.println("Exiting the app. Goodbye!");
+                break;    
             default:
                 System.out.println("Unknown selection.");
         }
         // we want to break after user selects an option 
     }
 
+    public void createAdditionalAccount() {
+        this.userAccount2 = new BankAccount();
+        HAS_ADDITIONAL = true;
+    }
+
+    public void switchAccount() {
+        this.currentAccount = (this.currentAccount == this.userAccount1) ? this.userAccount2 : this.userAccount1;
+    }
+
+
     public void performDeposit() {
-        BankAccount userAccount = getCurrentAccount();
+        BankAccount userAccount = currentAccount;
         double depositAmount = -1;
         while(depositAmount < 0) {
             System.out.print("How much would you like to deposit: ");
@@ -120,12 +123,11 @@ public class MainMenu {
     }
 
     public void checkBalance() {
-        BankAccount userAccount = getCurrentAccount();
-       System.out.println("Current Balance is: " + userAccount.getBalance()); 
+        System.out.println("Current Balance is: " + currentAccount.getBalance()); 
     }
 
     public void performWithDraw() {
-        BankAccount userAccount = getCurrentAccount();
+        BankAccount userAccount = currentAccount;
         double withdrawAmount = 0; 
         boolean isValid = false; 
         while(!isValid) {
@@ -135,7 +137,7 @@ public class MainMenu {
                 if(withdrawAmount < 0) {
                     System.out.println("You have entered a negative number, please try again.");
                 }
-                else if(userAccount.getBalance() < withdrawAmount) {
+                else if(currentAccount.getBalance() < withdrawAmount) {
                     System.out.println("You are unable to withdraw more than you already have.");
                 }
                 else {
@@ -146,12 +148,23 @@ public class MainMenu {
                 keyboardInput.nextLine();
             }
         }
-        userAccount.withdraw(withdrawAmount);
+        currentAccount.withdraw(withdrawAmount);
         System.out.println("Withdrawal successful!");
+    }
+
+    public void viewTransactions() {
+        System.out.println("Transaction history:");
+        for(double value : currentAccount.getTransactions()) {
+            if(value >= 0) {
+                System.out.println("Deposit: " + value);
+            } else {
+                System.out.println("Withdraw: " + value * -1);
+            }
+        }
     }
     
     public void performCloseAccount() {
-        BankAccount userAccount = getCurrentAccount();
+        BankAccount userAccount = currentAccount;
 
         if (userAccount.isClosed()) {
             System.out.println("This account is already closed.");
@@ -163,7 +176,7 @@ public class MainMenu {
     }
 
     public void performTransfer() {
-        BankAccount fromAccount = getCurrentAccount();
+        BankAccount fromAccount = currentAccount;
         int toChoice = -1;
 
         while (toChoice != 1 && toChoice != 2) {
@@ -176,12 +189,17 @@ public class MainMenu {
             }
         }
 
-        if (toChoice == currentAccount) {
-            System.out.println("You must choose a different account.");
+        BankAccount toAccount = (toChoice == 1) ? userAccount1 : userAccount2;
+
+        if (toAccount == null) {
+            System.out.println("That account does not exist.");
             return;
         }
 
-        BankAccount toAccount = getAccountByChoice(toChoice);
+        if (toAccount == currentAccount) {
+            System.out.println("You must choose a different account.");
+            return;
+        }
 
         double transferAmount = -1;
         while(transferAmount < 0) {
@@ -203,6 +221,7 @@ public class MainMenu {
         } catch (IllegalArgumentException e) {
             System.out.println("Transfer failed.");
         }
+
     }
 
     public void run() {

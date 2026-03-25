@@ -1,13 +1,23 @@
 package main;
 
+import java.util.ArrayList;
+
 public class BankAccount {
 
     private double balance;
     private boolean closed;
+    private ArrayList<Double> transactions;
+    private int ID;
+    private static int accountIDs = 0;
 
     public BankAccount() {
         this.balance = 0;
         this.closed = false;
+        this.ID = ++BankAccount.accountIDs;
+    }
+
+    public int getID() {
+        return this.ID;
     }
 
     public void deposit(double amount) {
@@ -23,8 +33,17 @@ public class BankAccount {
             throw new IllegalArgumentException(); 
         }
         this.balance = this.balance - withdrawAmount; 
+        record(-1 * withdrawAmount);
         // subtract the withdraw amount from the actual account. 
         
+    }
+
+    public void record(double amount) {
+        transactions.add(amount);
+    }
+
+    public ArrayList<Double> getTransactions() {
+        return this.transactions;
     }
 
     public double getBalance() {
