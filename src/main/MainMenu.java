@@ -13,12 +13,10 @@ public class MainMenu {
     private BankAccount userAccount2;
     private BankAccount currentAccount;
     private Scanner keyboardInput;
-    private BankOperations operations;
 
     public MainMenu() {
         this.userAccount1 = new BankAccount();
         this.currentAccount = this.userAccount1;
-        this.operations = new BankOperations();
         this.keyboardInput = new Scanner(System.in);
     }
 
@@ -50,13 +48,13 @@ public class MainMenu {
     public void processInput(int selection) {
         switch (selection) {
             case 1:
-                operations.performDeposit();
+                performDeposit();
                 break;
             case 2:
-                operations.performWithDraw();
+                performWithDraw();
                 break;
             case 3:
-                operations.checkBalance();
+                checkBalance();
                 break;
             case 4:
                 viewTransactions();
@@ -146,6 +144,18 @@ public class MainMenu {
                 System.out.println("Withdraw: " + value * -1);
             }
         }
+    }
+
+    public BankAccount getCurrentAccount() {
+        return this.currentAccount;
+    }
+
+    public BankAccount getSecondAccount() {
+        return this.userAccount2;
+    }
+
+    public static boolean hasAdditionalAccount() {
+        return HAS_ADDITIONAL;
     }
 
     public void run() {

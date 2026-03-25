@@ -36,7 +36,6 @@ public class BankAccount {
         this.balance = this.balance - withdrawAmount; 
         record(-1 * withdrawAmount);
         // subtract the withdraw amount from the actual account. 
-        
     }
 
     public void record(double amount) {
