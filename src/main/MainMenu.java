@@ -17,6 +17,12 @@ public class MainMenu {
     public MainMenu() {
         this.userAccount1 = new BankAccount();
         this.currentAccount = this.userAccount1;
+    
+    private BankOperations operations; 
+    private Scanner keyboardInput;
+
+    public MainMenu() {
+        this.operations = new BankOperations();
         this.keyboardInput = new Scanner(System.in);
     }
 
@@ -48,13 +54,13 @@ public class MainMenu {
     public void processInput(int selection) {
         switch (selection) {
             case 1:
-                performDeposit();
+                operations.performDeposit();
                 break;
             case 2:
-                performWithDraw();
+                operations.performWithDraw();
                 break;
             case 3:
-                checkBalance();
+                operations.checkBalance();
                 break;
             case 4:
                 viewTransactions();
