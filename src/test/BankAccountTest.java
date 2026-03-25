@@ -8,6 +8,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
 
@@ -58,5 +59,13 @@ public class BankAccountTest {
         assertEquals(accountOneBalance, 10, 0.01);
 
         
+    public void testTransactionHistory() {
+        BankAccount testAccount = new BankAccount();
+        testAccount.deposit(50);
+        testAccount.withdraw(30);
+        ArrayList<Double> testTransactions = new ArrayList<Double>();
+        testTransactions.add(50.0);
+        testTransactions.add(-30.0);
+        assertEquals(testAccount.getTransactions(), testTransactions);
     }
 }
