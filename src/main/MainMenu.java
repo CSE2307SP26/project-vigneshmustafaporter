@@ -5,8 +5,8 @@ import java.util.InputMismatchException;
 
 public class MainMenu {
 
-    private static final int EXIT_SELECTION = 4;
-    private static final int MAX_SELECTION = 4;
+    private static final int EXIT_SELECTION = 5;
+    private static final int MAX_SELECTION = 5;
 
     
     private BankOperations operations; 
@@ -22,7 +22,8 @@ public class MainMenu {
         System.out.println("1. Make a deposit");
         System.out.println("2. Make a withdraw"); 
         System.out.println("3. Check your balance"); 
-        System.out.println("4. Exit the app");
+        System.out.println("4. Check transaction history"); 
+        System.out.println("5. Exit the app");
     }
 
     public int getUserSelection(int max) {
@@ -51,6 +52,9 @@ public class MainMenu {
                 operations.checkBalance();
                 break;
             case 4:
+                viewTransactions();
+                break;
+            case 5:
                 System.out.println("Exiting the app. Goodbye!");
                 break;
             default:
@@ -59,6 +63,17 @@ public class MainMenu {
         // we want to break after user selects an option 
     }
 
+
+    public void viewTransactions() {
+        System.out.println("Transaction history:");
+        for(double value : userAccount.getTransactions()) {
+            if(value >= 0) {
+                System.out.println("Deposit: " + value);
+            } else {
+                System.out.println("Withdraw: " + value * -1);
+            }
+        }
+    }
 
     public void run() {
         int selection = -1;
