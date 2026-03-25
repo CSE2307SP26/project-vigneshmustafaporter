@@ -13,15 +13,11 @@ public class MainMenu {
     private BankAccount userAccount2;
     private BankAccount currentAccount;
     private Scanner keyboardInput;
+    private BankOperations operations;
 
     public MainMenu() {
         this.userAccount1 = new BankAccount();
         this.currentAccount = this.userAccount1;
-    
-    private BankOperations operations; 
-    private Scanner keyboardInput;
-
-    public MainMenu() {
         this.operations = new BankOperations();
         this.keyboardInput = new Scanner(System.in);
     }
