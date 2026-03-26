@@ -23,6 +23,7 @@ public class BankAccount {
     public void deposit(double amount) {
         if(amount > 0 && !this.closed) {
             this.balance += amount;
+            record(amount);
         } else {
             throw new IllegalArgumentException();
         }

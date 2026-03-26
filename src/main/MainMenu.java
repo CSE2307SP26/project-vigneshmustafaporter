@@ -118,7 +118,7 @@ public class MainMenu {
                 keyboardInput.nextLine();
             }
         }
-        userAccount.deposit(depositAmount);
+        currentAccount.deposit(depositAmount);
         System.out.println("Deposit successful!");
     }
 
