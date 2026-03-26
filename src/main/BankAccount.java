@@ -5,21 +5,23 @@ import java.util.ArrayList;
 public class BankAccount {
 
     private double balance;
+    private boolean closed;
     private ArrayList<Double> transactions;
-    private static int accountID = 0;
+    private int ID;
+    private static int accountIDs = 0;
 
     public BankAccount() {
         this.balance = 0;
-        this.transactions = new ArrayList<Double>();
-        BankAccount.accountID++;
+        this.closed = false;
+        this.ID = ++BankAccount.accountIDs;
     }
 
     public int getID() {
-        return BankAccount.accountID;
+        return this.ID;
     }
 
     public void deposit(double amount) {
-        if(amount > 0) {
+        if(amount > 0 && !this.closed) {
             this.balance += amount;
             record(amount);
         } else {
@@ -28,7 +30,7 @@ public class BankAccount {
     }
 
     public void withdraw(double withdrawAmount) {
-        if(this.balance - withdrawAmount < 0) {
+        if(this.balance - withdrawAmount < 0 || this.closed) {
             throw new IllegalArgumentException(); 
         }
         this.balance = this.balance - withdrawAmount; 
@@ -45,11 +47,33 @@ public class BankAccount {
         return this.transactions;
     }
 
-
     public double getBalance() {
+        if (this.closed) {
+            throw new IllegalStateException();
+        }
         return this.balance;
     }
 
+    public boolean isClosed() {
+        return this.closed;
+    }
+
+    public void closeAccount() {
+        if (this.closed) {
+            throw new IllegalStateException();
+        }
+        this.closed = true;
+    }
+
+    public void transferTo(BankAccount otherAccount, double amount) {
+        if (otherAccount == null || otherAccount.isClosed() || this.closed || amount <= 0) {
+            throw new IllegalArgumentException();
+        }
+        this.withdraw(amount);
+        otherAccount.deposit(amount);
+    }
 }
+
+
 
 
