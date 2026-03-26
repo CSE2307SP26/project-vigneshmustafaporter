@@ -4,8 +4,11 @@ import main.BankAccount;
 import main.MainMenu;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
 
@@ -60,6 +63,8 @@ public class BankAccountTest {
         } catch (IllegalArgumentException e) {
           //nothing
         }
+    }
+    
     public void testAdditionalAccountBoolean() {
         MainMenu testMenu = new MainMenu();
         assertFalse(testMenu.hasAdditionalAccount());

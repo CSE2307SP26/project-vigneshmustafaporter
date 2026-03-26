@@ -1,3 +1,3 @@
-# Close and Transfer Branch
+# Iteration 1 Bug Fix
 
-This the branch where the Close and Transfer features were addded. Birch is currently working on this branch. As of now, the BankAccount, MainMenu and BankAccountTest files have been appended, committed, and pushed. 
+This the branch where bugs caused by merging for Iteration 1 are managed.

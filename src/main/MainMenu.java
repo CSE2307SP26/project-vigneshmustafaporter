@@ -13,12 +13,10 @@ public class MainMenu {
     private BankAccount userAccount2;
     private BankAccount currentAccount;
     private Scanner keyboardInput;
-    private BankOperations operations; 
 
     public MainMenu() {
         this.userAccount1 = new BankAccount();
         this.currentAccount = this.userAccount1;
-        this.operations = new BankOperations();
         this.keyboardInput = new Scanner(System.in);
     }
 
@@ -54,18 +52,17 @@ public class MainMenu {
     public void processInput(int selection) {
         switch (selection) {
             case 1:
-                operations.performDeposit();
+                performDeposit();
                 break;
             case 2:
-                operations.performWithDraw();
+                performWithDraw();
                 break;
             case 3:
-                operations.checkBalance();
+                checkBalance();
                 break;
             case 4:
                 viewTransactions();
                 break;
-                
             case 5:
                 if (!HAS_ADDITIONAL) {
                     createAdditionalAccount();
@@ -76,7 +73,11 @@ public class MainMenu {
                 break;
                 
             case 6:
-                switchAccount();
+                if(HAS_ADDITIONAL) {
+                    switchAccount();
+                } else {
+                    System.out.println("You have no additional account. Press 5 to make one.");
+                }
                 break;
             case 7:
                 performCloseAccount();
@@ -102,9 +103,19 @@ public class MainMenu {
         this.currentAccount = (this.currentAccount == this.userAccount1) ? this.userAccount2 : this.userAccount1;
     }
 
+    public BankAccount getCurrentAccount() {
+        return this.currentAccount;
+    }
+
+    public boolean hasAdditionalAccount() {
+        return HAS_ADDITIONAL;
+    }
+
+    public BankAccount getSecondAccount() {
+        return this.userAccount2;
+    }
 
     public void performDeposit() {
-        BankAccount userAccount = currentAccount;
         double depositAmount = -1;
         while(depositAmount < 0) {
             System.out.print("How much would you like to deposit: ");
@@ -127,7 +138,6 @@ public class MainMenu {
     }
 
     public void performWithDraw() {
-        BankAccount userAccount = currentAccount;
         double withdrawAmount = 0; 
         boolean isValid = false; 
         while(!isValid) {
@@ -164,15 +174,14 @@ public class MainMenu {
     }
     
     public void performCloseAccount() {
-        BankAccount userAccount = currentAccount;
 
-        if (userAccount.isClosed()) {
+        if (currentAccount.isClosed()) {
             System.out.println("This account is already closed.");
             return;
         }
-
-        userAccount.closeAccount();
-        System.out.println("Account " + currentAccount + " has been closed.");
+        currentAccount.closeAccount();
+        System.out.println("Account " + currentAccount.getID() + " has been closed.");
+        switchAccount();
     }
 
     public void performTransfer() {
