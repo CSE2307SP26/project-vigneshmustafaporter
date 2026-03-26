@@ -19,8 +19,17 @@
 8. A bank adminstrator should be able to collect fees from existing accounts when necessary. (Porter)
 9. A bank adminstrator should be able to add an interest payment to an existing account when necessary. (Porter)
 
+## What user stories were completed this iteration?
+
+User stories 1-7 were implemented.
+
 ## What user stories do you intend to complete next iteration?
+
+We intend to completely stories 8 and 9 for the next iteration.
 
 ## Is there anything that you implemented but doesn't currently work?
 
+Currently, some edge cases for closing an account exist. For example, a user can still access and deposit money into the closed account; however, this will result in an error and the program will close. We plan to fix this in the next iteration.
+
 ## What commands are needed to compile and run your code from the command line?
+./runApp.sh
