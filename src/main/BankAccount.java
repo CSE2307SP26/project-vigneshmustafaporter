@@ -12,6 +12,7 @@ public class BankAccount {
 
     public BankAccount() {
         this.balance = 0;
+        this.transactions = new ArrayList<Double>();
         this.closed = false;
         this.ID = ++BankAccount.accountIDs;
     }
