@@ -5,23 +5,19 @@ import java.util.InputMismatchException;
 
 public class MainMenu {
 
-    private static final int EXIT_SELECTION = 10;
-    private static final int MAX_SELECTION = 10;
-    private static final int ADMIN_EXIT_SELECTION = 3;
-    private static final int ADMIN_MAX_SELECTION = 3;
+    private static final int EXIT_SELECTION = 9;
+    private static final int MAX_SELECTION = 9;
     private static boolean HAS_ADDITIONAL = false;
 
     private BankAccount userAccount1;
     private BankAccount userAccount2;
     private BankAccount currentAccount;
     private Scanner keyboardInput;
-    private BankAdmin admin;
 
     public MainMenu() {
         this.userAccount1 = new BankAccount();
         this.currentAccount = this.userAccount1;
         this.keyboardInput = new Scanner(System.in);
-        this.admin = new BankAdmin();
     }
 
     public void displayOptions() {
@@ -34,8 +30,7 @@ public class MainMenu {
         System.out.println("6. Switch account");
         System.out.println("7. Close your account");
         System.out.println("8. Transfer money");
-        System.out.println("9. Enter admin controls");
-        System.out.println("10. Exit the app");
+        System.out.println("9. Exit the app");
     }
 
     public int getUserSelection(int max) {
@@ -54,7 +49,7 @@ public class MainMenu {
 
 
 
-    public void processInput(int selection) {    
+    public void processInput(int selection) {
         switch (selection) {
             case 1:
                 performDeposit();
@@ -91,33 +86,12 @@ public class MainMenu {
                 performTransfer();
                 break;
             case 9:
-                adminMenu();
-                break;
-            case 10:
                 System.out.println("Exiting the app. Goodbye!");
                 break;    
             default:
                 System.out.println("Unknown selection.");
         }
         // we want to break after user selects an option 
-    }
-
-    public BankAccount selectAccount(){
-        int max = 1;
-        System.out.println("Choose an account");
-        System.out.println("1. " + userAccount1.getID());
-        if (HAS_ADDITIONAL){
-            max++;
-            System.out.println("2. " + userAccount2.getID());
-        }
-        int selection = getUserSelection(max);
-        if (selection == 1){
-            return userAccount1;
-        } else {
-            return userAccount2;
-        }
-
-
     }
 
     public void createAdditionalAccount() {
@@ -257,88 +231,6 @@ public class MainMenu {
             System.out.println("Transfer failed.");
         }
 
-    }
-
-    public void adminMenu(){
-        int adminSelection = -1;
-        while(adminSelection != ADMIN_EXIT_SELECTION){
-            displayAdminOptions();
-            adminSelection = getUserSelection(ADMIN_MAX_SELECTION);
-            processAdminInput(adminSelection);
-        }
-    }
-
-    public void displayAdminOptions(){
-        System.out.println("Welcome to admin mode. Please select one of the administrative options below.");
-        System.out.println("1. Collect fees");
-        System.out.println("2. Make an interest payment."); 
-        System.out.println("3. Exit admin mode.");
-    }
-
-    public void processAdminInput(int selection){
-        switch (selection) {
-            case 1:
-                adminCollectFees();
-                break;
-            case 2:
-                adminDepositInterest();
-                break;
-            case 3:
-                System.out.println("Exiting admin mode.");
-                break;
-            default:
-                System.out.println("Unknown selection.");
-        }
-    }
-
-
-
-    public void adminCollectFees(){
-        BankAccount collectionAccount;
-        collectionAccount = selectAccount();
-        double feeAmount = -1;
-        while(feeAmount < 0) {
-            System.out.print("How much would you like to charge as a fee: ");
-            try {
-                feeAmount = keyboardInput.nextDouble();
-                if (feeAmount < 0) {
-                    System.out.println("Please enter a non-negative amount.");
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid amount. Try again.");
-                keyboardInput.nextLine();
-            }
-        }
-        try {
-            admin.collectFees(collectionAccount, feeAmount);
-        } catch(IllegalArgumentException e) {
-            System.out.println("Invalid amount. Fee collection cancelled.");
-        }
-        
-    }
-
-    public void adminDepositInterest(){
-        BankAccount interestAccount;
-        interestAccount = selectAccount();
-        double depositAmount = -1;
-        while(depositAmount < 0) {
-            System.out.print("How much would you like to deposit: ");
-            try {
-                depositAmount = keyboardInput.nextDouble();
-                if (depositAmount < 0) {
-                    System.out.println("Please enter a non-negative amount.");
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid amount. Try again.");
-                keyboardInput.nextLine();
-            }
-        }
-        try {
-            admin.depositInterest(interestAccount, depositAmount);
-        } catch(IllegalArgumentException e) {
-            System.out.println("Invalid amount. Desposit cancelled.");
-        }
-        
     }
 
     public void run() {
