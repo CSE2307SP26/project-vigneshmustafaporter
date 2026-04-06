@@ -20,7 +20,7 @@
 9. A bank adminstrator should be able to add an interest payment to an existing account when necessary. (Porter)
 
 ## User stories Iteration 2
-1. 
+1. A bank customer should be able to have password protected accounts. (Mustafa)
 
 ## What user stories were completed this iteration?
 
