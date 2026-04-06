@@ -22,6 +22,8 @@
 ## User stories Iteration 2
 1. A bank customer should be able to have password protected accounts. (Mustafa)
 2. A bank teller can approve and/or deny customer transactions. (Mustafa)
+3. A bank account should have an account name to differentiate it. (Porter)
+4. A bank admin should be able to freeze a bank account. (Porter)
 
 ## What user stories were completed this iteration?
 
