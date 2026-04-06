@@ -7,7 +7,7 @@
 * Mustafa Tahir
 * Birch Yang
 
-## User stories
+## User stories Iteration 1
 
 1. A bank customer should be able to deposit into an existing account. (Shook)
 2. A bank customer should be able to withdraw from an account. (Vignesh)
@@ -18,6 +18,9 @@
 7. A bank customer should be able to transfer money from one account to another. (Birch)
 8. A bank adminstrator should be able to collect fees from existing accounts when necessary. (Porter)
 9. A bank adminstrator should be able to add an interest payment to an existing account when necessary. (Porter)
+
+## User stories Iteration 2
+1. 
 
 ## What user stories were completed this iteration?
 
