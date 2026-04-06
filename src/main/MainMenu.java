@@ -2,6 +2,8 @@
 package main;
 import java.util.Scanner;
 import java.util.InputMismatchException;
+import java.util.ArrayList;
+
 
 public class MainMenu {
 
@@ -9,23 +11,21 @@ public class MainMenu {
     private static final int MAX_SELECTION = 10;
     private static final int ADMIN_EXIT_SELECTION = 3;
     private static final int ADMIN_MAX_SELECTION = 3;
-    private static boolean HAS_ADDITIONAL = false;
-
-    private BankAccount userAccount1;
-    private BankAccount userAccount2;
+    private ArrayList<BankAccount> userAccounts;
     private BankAccount currentAccount;
     private Scanner keyboardInput;
     private BankAdmin admin;
 
     public MainMenu() {
-        this.userAccount1 = new BankAccount();
-        this.currentAccount = this.userAccount1;
+        this.userAccounts = new ArrayList<BankAccount>();
+        userAccounts.add(new BankAccount());
+        this.currentAccount = userAccounts.get(0);
         this.keyboardInput = new Scanner(System.in);
         this.admin = new BankAdmin();
     }
 
     public void displayOptions() {
-        System.out.println("Welcome to the 237 Bank App! You are currently using account " + this.currentAccount.getID());
+        System.out.println("Welcome to the 237 Bank App! You are currently using account " + this.currentAccount.getID() + ": " + this.currentAccount.getName());
         System.out.println("1. Make a deposit");
         System.out.println("2. Make a withdraw"); 
         System.out.println("3. Check your balance"); 
@@ -69,16 +69,12 @@ public class MainMenu {
                 viewTransactions();
                 break;
             case 5:
-                if (!HAS_ADDITIONAL) {
-                    createAdditionalAccount();
-                    switchAccount();
-                } else {
-                    System.out.println("You already have an additional account. Press 6 to switch.");
-                }
+                createAdditionalAccount();
+                switchAccount(userAccounts.size()-1);
                 break;
                 
             case 6:
-                if(HAS_ADDITIONAL) {
+                if(userAccounts.size() > 1) {
                     switchAccount();
                 } else {
                     System.out.println("You have no additional account. Press 5 to make one.");
@@ -103,42 +99,55 @@ public class MainMenu {
     }
 
     public BankAccount selectAccount(){
-        int max = 1;
-        System.out.println("Choose an account");
-        System.out.println("1. " + userAccount1.getID());
-        if (HAS_ADDITIONAL){
-            max++;
-            System.out.println("2. " + userAccount2.getID());
+        int max = userAccounts.size();
+        System.out.println("Choose an account: ");
+        for (BankAccount account : userAccounts){
+            System.out.println(account.getID() + ": " + account.getName());
         }
         int selection = getUserSelection(max);
-        if (selection == 1){
-            return userAccount1;
-        } else {
-            return userAccount2;
-        }
+        return userAccounts.get(selection-1);
 
 
     }
 
     public void createAdditionalAccount() {
-        this.userAccount2 = new BankAccount();
-        HAS_ADDITIONAL = true;
+        String accountName = "";
+        boolean goodName = false;
+        keyboardInput.nextLine();
+        while (!goodName){
+            System.out.print("Name your new account: ");
+            try {
+                accountName = keyboardInput.nextLine();
+                goodName = true;
+            for (BankAccount account : userAccounts){
+                if (account.getName().equals(accountName)){
+                    goodName = false;
+                    System.out.println("Please input a unique account name.");
+                }
+            }
+            if (accountName == ""){
+                goodName = false;
+                System.out.println("Please input a non-blank name.");
+            }
+            } catch(Exception e) {
+                System.out.println("Please input a proper string.");
+            }
+            
+            
+        }
+        userAccounts.add(new BankAccount(accountName));
     }
 
     public void switchAccount() {
-        this.currentAccount = (this.currentAccount == this.userAccount1) ? this.userAccount2 : this.userAccount1;
+        this.currentAccount = selectAccount();
+    }
+
+    public void switchAccount(int accountNum){
+        this.currentAccount = userAccounts.get(accountNum);
     }
 
     public BankAccount getCurrentAccount() {
         return this.currentAccount;
-    }
-
-    public boolean hasAdditionalAccount() {
-        return HAS_ADDITIONAL;
-    }
-
-    public BankAccount getSecondAccount() {
-        return this.userAccount2;
     }
 
     public void performDeposit() {
@@ -212,20 +221,8 @@ public class MainMenu {
 
     public void performTransfer() {
         BankAccount fromAccount = currentAccount;
-        int toChoice = -1;
-
-        while (toChoice != 1 && toChoice != 2) {
-            System.out.print("Transfer TO account (1 or 2): ");
-            try {
-                toChoice = keyboardInput.nextInt();
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid input. Enter 1 or 2.");
-                keyboardInput.nextLine();
-            }
-        }
-
-        BankAccount toAccount = (toChoice == 1) ? userAccount1 : userAccount2;
-
+        BankAccount toAccount = selectAccount();
+        
         if (toAccount == null) {
             System.out.println("That account does not exist.");
             return;

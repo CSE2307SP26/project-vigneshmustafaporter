@@ -9,16 +9,31 @@ public class BankAccount {
     private ArrayList<Double> transactions;
     private int ID;
     private static int accountIDs = 0;
+    public String name;
 
     public BankAccount() {
+        this.name = "Main";
         this.balance = 0;
         this.transactions = new ArrayList<Double>();
         this.closed = false;
         this.ID = ++BankAccount.accountIDs;
     }
 
+    public BankAccount(String name) {
+        this.name = name;
+        this.balance = 0;
+        this.transactions = new ArrayList<Double>();
+        this.closed = false;
+        this.ID = ++BankAccount.accountIDs;
+    }
+    
+
     public int getID() {
         return this.ID;
+    }
+
+    public String getName() {
+        return this.name;
     }
 
     public void deposit(double amount) {
