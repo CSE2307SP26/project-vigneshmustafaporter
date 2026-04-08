@@ -98,46 +98,78 @@ public class MainMenu {
         // we want to break after user selects an option 
     }
 
-    public BankAccount selectAccount(){
-        int max = userAccounts.size();
-        System.out.println("Choose an account: ");
-        for (BankAccount account : userAccounts){
-            System.out.println(account.getID() + ": " + account.getName());
+    public BankAccount selectAccount() {
+        ArrayList<BankAccount> openAccounts = getOpenAccounts();
+
+        if (openAccounts.isEmpty()) {
+            System.out.println("There are no open accounts available.");
+            return null;
         }
-        int selection = getUserSelection(max);
-        return userAccounts.get(selection-1);
 
+        System.out.println("Choose an account: ");
+        for (int i = 0; i < openAccounts.size(); i++) {
+            BankAccount account = openAccounts.get(i);
+            System.out.println((i + 1) + ". " + account.getName()
+                + " (ID: " + account.getID() + ")");
+        }
 
+        int selection = getUserSelection(openAccounts.size());
+        return openAccounts.get(selection - 1);
+    }
+
+    private ArrayList<BankAccount> getOpenAccounts() {
+        ArrayList<BankAccount> openAccounts = new ArrayList<BankAccount>();
+        for (BankAccount account : userAccounts) {
+            if (!account.isClosed()) {
+                openAccounts.add(account);
+            }
+        }
+        return openAccounts;
     }
 
     public void createAdditionalAccount() {
-        String accountName = "";
-        boolean goodName = false;
         keyboardInput.nextLine();
-        while (!goodName){
-            System.out.print("Name your new account: ");
-            try {
-                accountName = keyboardInput.nextLine();
-                goodName = true;
-            for (BankAccount account : userAccounts){
-                if (account.getName().equals(accountName)){
-                    goodName = false;
-                    System.out.println("Please input a unique account name.");
-                }
-            }
-            if (accountName == ""){
-                goodName = false;
-                System.out.println("Please input a non-blank name.");
-            }
-            } catch(Exception e) {
-                System.out.println("Please input a proper string.");
-            }
-            
-            
-        }
+        String accountName = promptForUniqueAccountName();
         userAccounts.add(new BankAccount(accountName));
     }
 
+    private String promptForUniqueAccountName() {
+        while (true) {
+            String accountName = readAccountName();
+            if (isBlankAccountName(accountName)) {
+                System.out.println("Please input a non-blank name.");
+                continue;
+            }
+            if (isDuplicateAccountName(accountName)) {
+                System.out.println("Please input a unique account name.");
+                continue;
+            }
+            return accountName;
+        }
+    }
+
+    private String readAccountName() {
+        System.out.print("Name your new account: ");
+        try {
+            return keyboardInput.nextLine();
+        } catch (Exception e) {
+            System.out.println("Please input a proper string.");
+            return "";
+        }
+    }
+
+    private boolean isBlankAccountName(String accountName) {
+        return accountName == null || accountName.isBlank();
+    }
+
+    private boolean isDuplicateAccountName(String accountName) {
+        for (BankAccount account : userAccounts) {
+            if (account.getName().equals(accountName)) {
+                return true;
+            }
+        }
+        return false;
+    }
     public void switchAccount() {
         this.currentAccount = selectAccount();
     }
@@ -151,21 +183,28 @@ public class MainMenu {
     }
 
     public void performDeposit() {
-        double depositAmount = -1;
-        while(depositAmount < 0) {
-            System.out.print("How much would you like to deposit: ");
+        double depositAmount = promptForNonNegativeAmount(
+            "How much would you like to deposit: "
+        );
+        currentAccount.deposit(depositAmount);
+        System.out.println("Deposit successful!");
+    }
+
+    private double promptForNonNegativeAmount(String prompt) {
+        while (true) {
+            System.out.print(prompt);
             try {
-                depositAmount = keyboardInput.nextDouble();
-                if (depositAmount < 0) {
+                double amount = keyboardInput.nextDouble();
+                if (amount < 0) {
                     System.out.println("Please enter a non-negative amount.");
+                    continue;
                 }
+                return amount;
             } catch (InputMismatchException e) {
                 System.out.println("Invalid amount. Try again.");
                 keyboardInput.nextLine();
             }
         }
-        currentAccount.deposit(depositAmount);
-        System.out.println("Deposit successful!");
     }
 
     public void checkBalance() {
@@ -173,28 +212,26 @@ public class MainMenu {
     }
 
     public void performWithDraw() {
-        double withdrawAmount = 0; 
-        boolean isValid = false; 
-        while(!isValid) {
-            System.out.print("How much would you like to withdraw: ");
-            try {
-                withdrawAmount = keyboardInput.nextDouble();
-                if(withdrawAmount < 0) {
-                    System.out.println("You have entered a negative number, please try again.");
-                }
-                else if(currentAccount.getBalance() < withdrawAmount) {
-                    System.out.println("You are unable to withdraw more than you already have.");
-                }
-                else {
-                    isValid = true; 
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid amount. Try again.");
-                keyboardInput.nextLine();
-            }
-        }
+        double withdrawAmount = promptForValidWithdrawAmount();
         currentAccount.withdraw(withdrawAmount);
         System.out.println("Withdrawal successful!");
+    }
+
+    private double promptForValidWithdrawAmount() {
+        while (true) {
+            double withdrawAmount = promptForNonNegativeAmount(
+                "How much would you like to withdraw: "
+            );
+            if (hasInsufficientFunds(withdrawAmount)) {
+                System.out.println("You are unable to withdraw more than you already have.");
+                continue;
+            }
+            return withdrawAmount;
+        }
+    }
+
+    private boolean hasInsufficientFunds(double amount) {
+        return currentAccount.getBalance() < amount;
     }
 
     public void viewTransactions() {
@@ -221,39 +258,40 @@ public class MainMenu {
 
     public void performTransfer() {
         BankAccount fromAccount = currentAccount;
-        BankAccount toAccount = selectAccount();
-        
+        BankAccount toAccount = selectTransferTargetAccount();
+
         if (toAccount == null) {
-            System.out.println("That account does not exist.");
             return;
         }
+
+        double transferAmount = promptForNonNegativeAmount(
+            "How much would you like to transfer: "
+        );
+        executeTransfer(fromAccount, toAccount, transferAmount);
+    }
+
+    private BankAccount selectTransferTargetAccount() {
+        BankAccount toAccount = selectAccount();
 
         if (toAccount == currentAccount) {
             System.out.println("You must choose a different account.");
-            return;
+            return null;
         }
 
-        double transferAmount = -1;
-        while(transferAmount < 0) {
-            System.out.print("How much would you like to transfer: ");
-            try {
-                transferAmount = keyboardInput.nextDouble();
-                if (transferAmount < 0) {
-                    System.out.println("Please enter a non-negative amount.");
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid amount. Try again.");
-                keyboardInput.nextLine();
-            }
-        }
+        return toAccount;
+    }
 
+    private void executeTransfer(BankAccount fromAccount, BankAccount toAccount, double amount) {
         try {
-            fromAccount.transferTo(toAccount, transferAmount);
+            fromAccount.transferTo(toAccount, amount);
             System.out.println("Transfer successful!");
         } catch (IllegalArgumentException e) {
             System.out.println("Transfer failed.");
         }
+    }
 
+    public int getAccountCount() {
+        return userAccounts.size();
     }
 
     public void adminMenu(){
@@ -290,52 +328,36 @@ public class MainMenu {
 
 
 
-    public void adminCollectFees(){
-        BankAccount collectionAccount;
-        collectionAccount = selectAccount();
-        double feeAmount = -1;
-        while(feeAmount < 0) {
-            System.out.print("How much would you like to charge as a fee: ");
-            try {
-                feeAmount = keyboardInput.nextDouble();
-                if (feeAmount < 0) {
-                    System.out.println("Please enter a non-negative amount.");
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid amount. Try again.");
-                keyboardInput.nextLine();
-            }
-        }
-        try {
-            admin.collectFees(collectionAccount, feeAmount);
-        } catch(IllegalArgumentException e) {
-            System.out.println("Invalid amount. Fee collection cancelled.");
-        }
-        
+    public void adminCollectFees() {
+        BankAccount collectionAccount = selectAccount();
+        double feeAmount = promptForNonNegativeAmount(
+            "How much would you like to charge as a fee: "
+        );
+        applyAdminFee(collectionAccount, feeAmount);
     }
 
-    public void adminDepositInterest(){
-        BankAccount interestAccount;
-        interestAccount = selectAccount();
-        double depositAmount = -1;
-        while(depositAmount < 0) {
-            System.out.print("How much would you like to deposit: ");
-            try {
-                depositAmount = keyboardInput.nextDouble();
-                if (depositAmount < 0) {
-                    System.out.println("Please enter a non-negative amount.");
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid amount. Try again.");
-                keyboardInput.nextLine();
-            }
-        }
+    private void applyAdminFee(BankAccount account, double feeAmount) {
         try {
-            admin.depositInterest(interestAccount, depositAmount);
-        } catch(IllegalArgumentException e) {
+            admin.collectFees(account, feeAmount);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid amount. Fee collection cancelled.");
+        }
+    }
+
+    public void adminDepositInterest() {
+        BankAccount interestAccount = selectAccount();
+        double depositAmount = promptForNonNegativeAmount(
+            "How much would you like to deposit: "
+        );
+        applyAdminInterestDeposit(interestAccount, depositAmount);
+    }
+
+    private void applyAdminInterestDeposit(BankAccount account, double depositAmount) {
+        try {
+            admin.depositInterest(account, depositAmount);
+        } catch (IllegalArgumentException e) {
             System.out.println("Invalid amount. Desposit cancelled.");
         }
-        
     }
 
     public void run() {
