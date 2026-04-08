@@ -26,6 +26,8 @@
 4. A bank admin should be able to freeze a bank account. (Porter)
 5. A bank account should be able to calculate and add interest to itself. (Birch)
 6. A bank account should be able to set a saving goal and keep tracking on it. (Birch)
+7. A user should be able to create a finanical profile after answering questions(income, monthly debt, etc) (Vignesh)
+8. A user should be able to check their max-home-affordability price after creating their financial profile (Vignesh) 
 
 ## What user stories were completed this iteration?
 
