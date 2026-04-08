@@ -42,4 +42,5 @@ We intend to completely stories 8 and 9 for the next iteration.
 Currently, some edge cases for closing an account exist. For example, a user can still access and deposit money into the closed account; however, this will result in an error and the program will close. We plan to fix this in the next iteration.
 
 ## What commands are needed to compile and run your code from the command line?
+chmod +x runApp.sh
 ./runApp.sh
