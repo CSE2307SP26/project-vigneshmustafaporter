@@ -24,7 +24,7 @@
 2. A bank teller should be able to approve and/or deny customer transactions. (Mustafa)
 3. A bank account should have an account name to differentiate it. (Porter)
 4. A bank admin should be able to freeze a bank account. (Porter)
-5. A bank account should be able to calculate and add interest to itself. (Birch)
+5. A bank user should be able to reopen his/her closed account. (Birch)
 6. A bank account should be able to set a saving goal and keep tracking on it. (Birch)
 7. A user should be able to create a finanical profile after answering questions(income, monthly debt, etc) (Vignesh)
 8. A user should be able to check their max-home-affordability price after creating their financial profile (Vignesh) 
