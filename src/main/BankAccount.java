@@ -37,6 +37,9 @@ public class BankAccount {
     }
 
     public void deposit(double amount) {
+        if (isClosed()) {
+            throw new IllegalStateException("Account is closed.");
+        }
         if(amount > 0 && !this.closed) {
             this.balance += amount;
             record(amount);
@@ -46,6 +49,12 @@ public class BankAccount {
     }
 
     public void withdraw(double withdrawAmount) {
+        if (isClosed()) {
+            throw new IllegalStateException("Account is closed.");
+        }
+        if (withdrawAmount < 0) {
+            throw new IllegalArgumentException("Invalid withdraw amount.");
+        }
         if(this.balance - withdrawAmount < 0 || this.closed) {
             throw new IllegalArgumentException(); 
         }

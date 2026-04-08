@@ -34,6 +34,42 @@ public class BankAccountTest {
     }
 
     @Test
+public void testWithdraw() {
+    BankAccount testAccount = new BankAccount();
+    testAccount.deposit(80);
+    testAccount.withdraw(30);
+
+    assertEquals(50, testAccount.getBalance(), 0.01);
+}
+
+@Test
+public void testWithdrawOverLimit() {
+    BankAccount testAccount = new BankAccount();
+    testAccount.deposit(50);
+
+    try {
+        testAccount.withdraw(100);
+        fail();
+    } catch (IllegalArgumentException e) {
+        // pass
+    }
+
+    assertEquals(50, testAccount.getBalance(), 0.01);
+}
+
+@Test
+public void testInvalidWithdraw() {
+    BankAccount testAccount = new BankAccount();
+
+    try {
+        testAccount.withdraw(-20);
+        fail();
+    } catch (IllegalArgumentException e) {
+        // pass
+    }
+}
+
+    @Test
     public void testCloseAccount() {
         BankAccount testAccount = new BankAccount();
         testAccount.closeAccount();
@@ -46,6 +82,19 @@ public class BankAccountTest {
           //nothing
         }
     }
+
+    @Test
+public void testClosedAccountCannotDeposit() {
+    BankAccount testAccount = new BankAccount();
+    testAccount.closeAccount();
+
+    try {
+        testAccount.deposit(50);
+        fail();
+    } catch (IllegalStateException e) {
+        // pass
+    }
+}
 
     @Test
     public void testTransfer() {
@@ -65,32 +114,86 @@ public class BankAccountTest {
           //nothing
         }
     }
-    
-    public void testAdditionalAccountBoolean() {
-        MainMenu testMenu = new MainMenu();
-        assertFalse(testMenu.hasAdditionalAccount());
-        testMenu.createAdditionalAccount();
-        assertTrue(testMenu.hasAdditionalAccount());
-        assertNotNull(testMenu.getSecondAccount());
-    }
 
     @Test
-    public void testAdditionalAccountBalance() {
-        MainMenu testMenu = new MainMenu();
-        testMenu.getCurrentAccount().deposit(20);
-        testMenu.getCurrentAccount().withdraw(10);
-        testMenu.createAdditionalAccount();
-        testMenu.switchAccount();
-        testMenu.getCurrentAccount().deposit(50);
-        testMenu.getCurrentAccount().withdraw(30);
+public void testTransferOverLimit() {
+    BankAccount fromAccount = new BankAccount();
+    BankAccount toAccount = new BankAccount();
 
-        double accountTwoBalance = testMenu.getCurrentAccount().getBalance();
-        testMenu.switchAccount();
-        double accountOneBalance = testMenu.getCurrentAccount().getBalance();
+    fromAccount.deposit(40);
 
-        assertEquals(accountTwoBalance, 20, 0.01);
-        assertEquals(accountOneBalance, 10, 0.01);
+    try {
+        fromAccount.transferTo(toAccount, 100);
+        fail();
+    } catch (IllegalArgumentException e) {
+        // pass
     }
+
+    assertEquals(40, fromAccount.getBalance(), 0.01);
+    assertEquals(0, toAccount.getBalance(), 0.01);
+}
+
+@Test
+public void testNegativeTransfer() {
+    BankAccount fromAccount = new BankAccount();
+    BankAccount toAccount = new BankAccount();
+
+    fromAccount.deposit(100);
+
+    try {
+        fromAccount.transferTo(toAccount, -10);
+        fail();
+    } catch (IllegalArgumentException e) {
+        // pass
+    }
+}
+    
+    @Test
+public void testAdditionalAccountBoolean() {
+    System.setIn(new java.io.ByteArrayInputStream(
+        "\nTest Account\n".getBytes()
+    ));
+
+    MainMenu testMenu = new MainMenu();
+
+    assertEquals(1, testMenu.getAccountCount());
+
+    testMenu.createAdditionalAccount();
+
+    assertEquals(2, testMenu.getAccountCount());
+}
+
+@Test
+public void testAdditionalAccountBalance() {
+    System.setIn(new java.io.ByteArrayInputStream(
+        "\nSecond Account\n".getBytes()
+    ));
+
+    MainMenu testMenu = new MainMenu();
+    testMenu.getCurrentAccount().deposit(20);
+    testMenu.getCurrentAccount().withdraw(10);
+    testMenu.createAdditionalAccount();
+    testMenu.switchAccount(1);
+    testMenu.getCurrentAccount().deposit(50);
+    testMenu.getCurrentAccount().withdraw(30);
+
+    double accountTwoBalance = testMenu.getCurrentAccount().getBalance();
+    testMenu.switchAccount(0);
+    double accountOneBalance = testMenu.getCurrentAccount().getBalance();
+    assertEquals(20, accountTwoBalance, 0.01);
+    assertEquals(10, accountOneBalance, 0.01);
+}
+
+    @Test
+public void testDuplicateAccountName() {
+    String simulatedInput = "Savings\nSavings2\n";
+    System.setIn(new java.io.ByteArrayInputStream(simulatedInput.getBytes()));
+
+    MainMenu testMenu = new MainMenu();
+    testMenu.createAdditionalAccount();
+
+    assertEquals(2, testMenu.getAccountCount());
+}
 
     @Test    
     public void testTransactionHistory() {
