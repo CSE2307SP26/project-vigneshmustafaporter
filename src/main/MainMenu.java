@@ -7,8 +7,8 @@ import java.util.ArrayList;
 
 public class MainMenu {
 
-    private static final int EXIT_SELECTION = 10;
-    private static final int MAX_SELECTION = 10;
+    private static final int EXIT_SELECTION = 12;
+    private static final int MAX_SELECTION = 12;
     private static final int ADMIN_EXIT_SELECTION = 3;
     private static final int ADMIN_MAX_SELECTION = 3;
     private ArrayList<BankAccount> userAccounts;
@@ -32,10 +32,12 @@ public class MainMenu {
         System.out.println("4. Check transaction history"); 
         System.out.println("5. Create additional account"); 
         System.out.println("6. Switch account");
-        System.out.println("7. Close your account");
-        System.out.println("8. Transfer money");
-        System.out.println("9. Enter admin controls");
-        System.out.println("10. Exit the app");
+        System.out.println("7. Rename current account");
+        System.out.println("8. Close your account");
+        System.out.println("9. Reopen an account");
+        System.out.println("10. Transfer money");
+        System.out.println("11. Enter admin controls");
+        System.out.println("12. Exit the app");
     }
 
     public int getUserSelection(int max) {
@@ -81,15 +83,21 @@ public class MainMenu {
                 }
                 break;
             case 7:
-                performCloseAccount();
+                renameCurrentAccount();
                 break;
             case 8:
-                performTransfer();
+                performCloseAccount();
                 break;
             case 9:
-                adminMenu();
+                reopenClosedAccount();
                 break;
             case 10:
+                performTransfer();
+                break;
+            case 11:
+                adminMenu();
+                break;
+            case 12:
                 System.out.println("Exiting the app. Goodbye!");
                 break;    
             default:
@@ -182,6 +190,38 @@ public class MainMenu {
         return this.currentAccount;
     }
 
+    public void renameCurrentAccount() {
+        keyboardInput.nextLine();
+        String newName = readRenameName();
+
+        if (currentAccount.isClosed()) {
+            throw new IllegalStateException("Closed accounts cannot be renamed.");
+        }
+        if (isBlankAccountName(newName)) {
+            throw new IllegalArgumentException("Please input a non-blank name.");
+        }
+        if (isDuplicateRename(newName)) {
+            throw new IllegalArgumentException("Please input a unique account name.");
+        }
+
+        currentAccount.renameAccount(newName);
+        System.out.println("Account renamed successfully.");
+    }
+
+    private String readRenameName() {
+        System.out.print("Enter a new account name: ");
+        return keyboardInput.nextLine();
+    }
+
+    private boolean isDuplicateRename(String newName) {
+        for (BankAccount account : userAccounts) {
+            if (account != currentAccount && account.getName().equals(newName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void performDeposit() {
         double depositAmount = promptForNonNegativeAmount(
             "How much would you like to deposit: "
@@ -254,6 +294,45 @@ public class MainMenu {
         currentAccount.closeAccount();
         System.out.println("Account " + currentAccount.getID() + " has been closed.");
         switchAccount();
+    }
+
+    public void reopenClosedAccount() {
+        BankAccount accountToReopen = selectClosedAccount();
+
+        if (accountToReopen == null) {
+            System.out.println("There are no closed accounts.");
+            return;
+        }
+
+        accountToReopen.reopenAccount();
+        System.out.println("Account reopened successfully.");
+    }
+
+    private BankAccount selectClosedAccount() {
+        ArrayList<BankAccount> closedAccounts = getClosedAccounts();
+        if (closedAccounts.isEmpty()) {
+            return null;
+        }
+        System.out.println("Choose an account to reopen:");
+        for (int i = 0; i < closedAccounts.size(); i++) {
+            BankAccount account = closedAccounts.get(i);
+            System.out.println((i + 1) + ". " + account.getName());
+        }
+
+        int selection = getUserSelection(closedAccounts.size());
+        return closedAccounts.get(selection - 1);
+    }
+
+    private ArrayList<BankAccount> getClosedAccounts() {
+        ArrayList<BankAccount> closedAccounts = new ArrayList<>();
+
+        for (BankAccount account : userAccounts) {
+            if (account.isClosed()) {
+                closedAccounts.add(account);
+            }
+        }
+
+        return closedAccounts;
     }
 
     public void performTransfer() {

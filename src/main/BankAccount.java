@@ -79,6 +79,13 @@ public class BankAccount {
         return this.balance;
     }
 
+    public void renameAccount(String newName) {
+        if (newName == null || newName.isBlank()) {
+            throw new IllegalArgumentException("Invalid account name.");
+        }
+        this.name = newName;
+    }
+
     public boolean isClosed() {
         return this.closed;
     }
@@ -88,6 +95,13 @@ public class BankAccount {
             throw new IllegalStateException();
         }
         this.closed = true;
+    }
+
+    public void reopenAccount() {
+        if (!isClosed()) {
+            throw new IllegalStateException("Account is already open.");
+        }
+        this.closed = false;
     }
 
     public void transferTo(BankAccount otherAccount, double amount) {

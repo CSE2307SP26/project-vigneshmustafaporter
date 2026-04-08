@@ -195,6 +195,72 @@ public void testDuplicateAccountName() {
     assertEquals(2, testMenu.getAccountCount());
 }
 
+@Test
+public void testRenameAccount() {
+    BankAccount testAccount = new BankAccount("Savings");
+
+    testAccount.renameAccount("Travel Fund");
+
+    assertEquals("Travel Fund", testAccount.getName());
+}
+
+@Test
+public void testRenameBlankName() {
+    BankAccount testAccount = new BankAccount("Savings");
+
+    try {
+        testAccount.renameAccount("");
+        fail();
+    } catch (IllegalArgumentException e) {
+        // pass
+    }
+}
+
+@Test
+public void testRenameDuplicateName() {
+    MainMenu probeMenu = new MainMenu();
+    String originalName = probeMenu.getCurrentAccount().getName();
+
+    System.setIn(new java.io.ByteArrayInputStream(
+        ("\nSavings\n\n" + originalName + "\n").getBytes()
+    ));
+
+    MainMenu testMenu = new MainMenu();
+    testMenu.createAdditionalAccount();
+    testMenu.switchAccount(1);
+
+    try {
+        testMenu.renameCurrentAccount();
+        fail();
+    } catch (IllegalArgumentException e) {
+        // pass
+    }
+}
+
+@Test
+public void testReopenAccount() {
+    BankAccount testAccount = new BankAccount();
+
+    testAccount.closeAccount();
+    assertTrue(testAccount.isClosed());
+
+    testAccount.reopenAccount();
+
+    assertFalse(testAccount.isClosed());
+}
+
+@Test
+public void testReopenAlreadyOpenAccount() {
+    BankAccount testAccount = new BankAccount();
+
+    try {
+        testAccount.reopenAccount();
+        fail();
+    } catch (IllegalStateException e) {
+        // pass
+    }
+}
+
     @Test    
     public void testTransactionHistory() {
         BankAccount testAccount = new BankAccount();
