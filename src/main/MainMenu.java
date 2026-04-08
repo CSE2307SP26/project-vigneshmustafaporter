@@ -21,7 +21,7 @@ public class MainMenu {
         userAccounts.add(new BankAccount());
         this.currentAccount = userAccounts.get(0);
         this.keyboardInput = new Scanner(System.in);
-        this.admin = new BankAdmin();
+        this.admin = null;
     }
 
     public void displayOptions() {
@@ -375,12 +375,45 @@ public class MainMenu {
 
     public void adminMenu(){
         int adminSelection = -1;
+        if (!checkPassword()){
+            adminSelection = ADMIN_EXIT_SELECTION; // set the selection to automatically exit the admin menu
+            System.out.println("Incorrect password, exiting admin mode.");
+        }
         while(adminSelection != ADMIN_EXIT_SELECTION){
             displayAdminOptions();
             adminSelection = getUserSelection(ADMIN_MAX_SELECTION);
             processAdminInput(adminSelection);
         }
     }
+
+    public boolean checkPassword(){
+        if (this.admin == null){
+            System.out.println("Please input a password for the bank admin.");
+            String password = readPassword();
+            if (password == ""){
+                return false;
+            } else {
+                this.admin = new BankAdmin(password);
+                return true;
+            }
+        } else {
+            System.out.print("Password: ");
+            String password = readPassword();
+            return admin.checkPassword(password);
+        }
+    }
+
+    public String readPassword(){
+        try {
+            keyboardInput.nextLine(); //clear the line
+            return keyboardInput.nextLine();
+        } catch (Exception e) {
+            System.out.println("Please try again with a proper string.");
+            return "";
+        }
+    }
+
+
 
     public void displayAdminOptions(){
         System.out.println("Welcome to admin mode. Please select one of the administrative options below.");
