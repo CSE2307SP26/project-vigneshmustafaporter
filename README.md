@@ -23,7 +23,7 @@
 1. A bank customer should be able to have password protected accounts. (Mustafa)
 2. A bank teller should be able to approve and/or deny customer transactions. (Mustafa)
 3. A bank account should have an account name to differentiate it. (Porter)
-4. A bank admin should be able to freeze a bank account. (Porter)
+4. A bank admin should be password protected with a password set on first use. (Porter)
 5. A bank user should be able to reopen his/her closed account. (Birch)
 6. A bank user should be able to rename an existing account. (Birch)
 7. A user should be able to create a finanical profile after answering questions(income, monthly debt, etc) (Vignesh)
