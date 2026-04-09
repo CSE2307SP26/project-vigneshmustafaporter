@@ -64,3 +64,5 @@ Everything should be working fine.
 ## User stories Iteration 3
 1. A bank account should be classified as saving account or checking account. (Birch)
 2. A bank user should be able to connect his/her credit card to one bank account. (Birch)
+3. A bank user should be able to view their most recent transactions (Vignesh)
+4. A bank user should be able to see to set a budget and see their main spending categories (Vignesh) 
