@@ -7,14 +7,18 @@ import java.util.ArrayList;
 
 public class MainMenu {
 
-    private static final int EXIT_SELECTION = 12;
-    private static final int MAX_SELECTION = 12;
+    private static final int EXIT_SELECTION = 14;
+    private static final int MAX_SELECTION = 14;
     private static final int ADMIN_EXIT_SELECTION = 3;
     private static final int ADMIN_MAX_SELECTION = 3;
     private ArrayList<BankAccount> userAccounts;
     private BankAccount currentAccount;
     private Scanner keyboardInput;
     private BankAdmin admin;
+    private FinancialProfileCollector profileCollector;
+    private FinancialProfile finprofile; 
+   
+
 
     public MainMenu() {
         this.userAccounts = new ArrayList<BankAccount>();
@@ -22,6 +26,7 @@ public class MainMenu {
         this.currentAccount = userAccounts.get(0);
         this.keyboardInput = new Scanner(System.in);
         this.admin = null;
+        this.profileCollector = new FinancialProfileCollector(keyboardInput);
     }
 
     public void displayOptions() {
@@ -37,7 +42,9 @@ public class MainMenu {
         System.out.println("9. Reopen an account");
         System.out.println("10. Transfer money");
         System.out.println("11. Enter admin controls");
-        System.out.println("12. Exit the app");
+        System.out.println("12. Create a financial profile");
+        System.out.println("13. Use the home affordability calculator");
+        System.out.println("14. Exit the app");
     }
 
     public int getUserSelection(int max) {
@@ -98,6 +105,19 @@ public class MainMenu {
                 adminMenu();
                 break;
             case 12:
+                System.out.println("The finanical profile"); 
+                this.finprofile = profileCollector.collectFromUser();
+                break; 
+            case 13:
+                System.out.println("Home affordadiblity calculator section \n"); 
+                if(finprofile == null) {
+                    System.out.println("Please create a financial profile first (option 12). \n");
+                } else {
+                    int maxHomePrice = AffordabilityCalculator.calculateMaxHomePrice(finprofile);
+                    System.out.println("Based on your financial profile, you can afford a home priced up to: $" + maxHomePrice);
+                }
+                break; 
+            case 14:
                 System.out.println("Exiting the app. Goodbye!");
                 break;    
             default:
