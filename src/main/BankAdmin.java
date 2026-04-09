@@ -10,7 +10,7 @@ public class BankAdmin {
         this.password = password;
     }
 
-    boolean checkPassword(String password){
+    public boolean checkPassword(String password){
         return this.password.equals(password);
     }
 
