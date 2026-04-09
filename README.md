@@ -7,7 +7,7 @@
 * Mustafa Tahir
 * Birch Yang
 
-## User stories
+## User stories Iteration 1
 
 1. A bank customer should be able to deposit into an existing account. (Shook)
 2. A bank customer should be able to withdraw from an account. (Vignesh)
@@ -33,3 +33,36 @@ Currently, some edge cases for closing an account exist. For example, a user can
 
 ## What commands are needed to compile and run your code from the command line?
 ./runApp.sh
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## User stories Iteration 2
+1. A bank customer should be able to have password protected accounts. (Mustafa)
+2. A bank teller should be able to approve and/or deny customer transactions. (Mustafa)
+3. A bank account should have an account name to differentiate it. (Porter)
+4. A bank admin should be password protected with a password set on first use. (Porter)
+5. A bank user should be able to reopen his/her closed account. (Birch)
+6. A bank user should be able to rename an existing account. (Birch)
+7. A user should be able to create a finanical profile after answering questions(income, monthly debt, etc) (Vignesh)
+8. A user should be able to check their max-home-affordability price after creating their financial profile (Vignesh)
+
+## What user stories were completed this iteration?
+
+User stories 3-8 from iteration 2 were implemented, and user stories 8-9 from iteration 1 were implemented.
+
+## What user stories do you intend to complete next iteration?
+
+We intend to implement user stories 1 and 2 in the next iteration.
+
+## Is there anything that you implemented but doesn't currently work?
+
+Everything should be working fine.
+
+## What commands are needed to compile and run your code from the command line?
+./runApp.sh
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## User stories Iteration 3
+1. A bank account should be classified as saving account or checking account. (Birch)
+2. A bank user should be able to connect his/her credit card to one bank account. (Birch)
+3. A bank user should be able to view their most recent transactions (Vignesh)
+4. A bank user should be able to see to set a budget and see their main spending categories (Vignesh) 
