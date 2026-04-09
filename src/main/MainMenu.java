@@ -4,7 +4,6 @@ import java.util.Scanner;
 import java.util.InputMismatchException;
 import java.util.ArrayList;
 
-
 public class MainMenu {
 
     private static final int EXIT_SELECTION = 14;
@@ -18,8 +17,6 @@ public class MainMenu {
     private FinancialProfileCollector profileCollector;
     private FinancialProfile finprofile; 
    
-
-
     public MainMenu() {
         this.userAccounts = new ArrayList<BankAccount>();
         userAccounts.add(new BankAccount());
@@ -61,8 +58,6 @@ public class MainMenu {
         return selection;
     }
 
-
-
     public void processInput(int selection) {    
         switch (selection) {
             case 1:
@@ -81,7 +76,6 @@ public class MainMenu {
                 createAdditionalAccount();
                 switchAccount(userAccounts.size()-1);
                 break;
-                
             case 6:
                 if(userAccounts.size() > 1) {
                     switchAccount();
@@ -198,6 +192,7 @@ public class MainMenu {
         }
         return false;
     }
+
     public void switchAccount() {
         this.currentAccount = selectAccount();
     }
@@ -433,8 +428,6 @@ public class MainMenu {
         }
     }
 
-
-
     public void displayAdminOptions(){
         System.out.println("Welcome to admin mode. Please select one of the administrative options below.");
         System.out.println("1. Collect fees");
@@ -457,8 +450,6 @@ public class MainMenu {
                 System.out.println("Unknown selection.");
         }
     }
-
-
 
     public void adminCollectFees() {
         BankAccount collectionAccount = selectAccount();
@@ -506,5 +497,4 @@ public class MainMenu {
         MainMenu bankApp = new MainMenu();
         bankApp.run();
     }
-
 }
