@@ -3,9 +3,15 @@ package main;
 
 
 public class BankAdmin {
-    
-    public BankAdmin(){
 
+    private String password;
+    
+    public BankAdmin(String password){
+        this.password = password;
+    }
+
+    boolean checkPassword(String password){
+        return this.password.equals(password);
     }
 
     public void depositInterest(BankAccount account, double amount) {
