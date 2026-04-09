@@ -62,4 +62,5 @@ Everything should be working fine.
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ## User stories Iteration 3
-1. 
+1. A bank account should be classified as saving account or checking account. (Birch)
+2. A bank user should be able to connect his/her credit card to one bank account. (Birch)
