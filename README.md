@@ -33,6 +33,7 @@ Currently, some edge cases for closing an account exist. For example, a user can
 
 ## What commands are needed to compile and run your code from the command line?
 ./runApp.sh
+
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ## User stories Iteration 2
 1. A bank customer should be able to have password protected accounts. (Mustafa)
@@ -58,6 +59,7 @@ Everything should be working fine.
 
 ## What commands are needed to compile and run your code from the command line?
 ./runApp.sh
+
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ## User stories Iteration 3
 1. 
