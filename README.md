@@ -47,11 +47,11 @@ Currently, some edge cases for closing an account exist. For example, a user can
 
 ## What user stories were completed this iteration?
 
-User stories 1-8 were implemented.
+User stories 3-8 from iteration 2 were implemented, and user stories 8-9 from iteration 1 were implemented.
 
 ## What user stories do you intend to complete next iteration?
 
-All user stories for this iteration have been completed. We plan to write new user stories for iteration 3.
+We intend to implement user stories 1 and 2 in the next iteration.
 
 ## Is there anything that you implemented but doesn't currently work?
 
