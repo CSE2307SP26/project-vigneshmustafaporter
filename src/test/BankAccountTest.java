@@ -69,6 +69,23 @@ public void testInvalidWithdraw() {
     }
 }
 
+@Test
+public void testCheckBalance() {
+    MainMenu testMenu = new MainMenu();
+    testMenu.getCurrentAccount().deposit(75);
+
+    java.io.ByteArrayOutputStream output =
+        new java.io.ByteArrayOutputStream();
+    java.io.PrintStream originalOut = System.out;
+    System.setOut(new java.io.PrintStream(output));
+
+    testMenu.checkBalance();
+
+    System.setOut(originalOut);
+
+    assertTrue(output.toString().contains("Current Balance is: 75.0"));
+}
+
     @Test
     public void testCloseAccount() {
         BankAccount testAccount = new BankAccount();
