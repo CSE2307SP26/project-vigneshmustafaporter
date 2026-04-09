@@ -2,5 +2,6 @@
 
 #put commands here to compile and run your app from command line
 
-javac src/main/*.java
-java src/main/MainMenu.java
+javac  -d src/main/*.java
+java -cp bin main.MainMenu
+# new script to run the appm and compile the main menu. 
