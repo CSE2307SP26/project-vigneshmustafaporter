@@ -9,19 +9,37 @@ public class BankAccount {
     private ArrayList<Double> transactions;
     private int ID;
     private static int accountIDs = 0;
+    public String name;
 
     public BankAccount() {
+        this.name = "Main";
         this.balance = 0;
         this.transactions = new ArrayList<Double>();
         this.closed = false;
         this.ID = ++BankAccount.accountIDs;
     }
 
+    public BankAccount(String name) {
+        this.name = name;
+        this.balance = 0;
+        this.transactions = new ArrayList<Double>();
+        this.closed = false;
+        this.ID = ++BankAccount.accountIDs;
+    }
+    
+
     public int getID() {
         return this.ID;
     }
 
+    public String getName() {
+        return this.name;
+    }
+
     public void deposit(double amount) {
+        if (isClosed()) {
+            throw new IllegalStateException("Account is closed.");
+        }
         if(amount > 0 && !this.closed) {
             this.balance += amount;
             record(amount);
@@ -31,6 +49,12 @@ public class BankAccount {
     }
 
     public void withdraw(double withdrawAmount) {
+        if (isClosed()) {
+            throw new IllegalStateException("Account is closed.");
+        }
+        if (withdrawAmount < 0) {
+            throw new IllegalArgumentException("Invalid withdraw amount.");
+        }
         if(this.balance - withdrawAmount < 0 || this.closed) {
             throw new IllegalArgumentException(); 
         }
@@ -55,6 +79,13 @@ public class BankAccount {
         return this.balance;
     }
 
+    public void renameAccount(String newName) {
+        if (newName == null || newName.isBlank()) {
+            throw new IllegalArgumentException("Invalid account name.");
+        }
+        this.name = newName;
+    }
+
     public boolean isClosed() {
         return this.closed;
     }
@@ -64,6 +95,13 @@ public class BankAccount {
             throw new IllegalStateException();
         }
         this.closed = true;
+    }
+
+    public void reopenAccount() {
+        if (!isClosed()) {
+            throw new IllegalStateException("Account is already open.");
+        }
+        this.closed = false;
     }
 
     public void transferTo(BankAccount otherAccount, double amount) {

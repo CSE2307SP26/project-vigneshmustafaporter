@@ -2,35 +2,46 @@
 package main;
 import java.util.Scanner;
 import java.util.InputMismatchException;
+import java.util.ArrayList;
 
 public class MainMenu {
 
-    private static final int EXIT_SELECTION = 9;
-    private static final int MAX_SELECTION = 9;
-    private static boolean HAS_ADDITIONAL = false;
-
-    private BankAccount userAccount1;
-    private BankAccount userAccount2;
+    private static final int EXIT_SELECTION = 14;
+    private static final int MAX_SELECTION = 14;
+    private static final int ADMIN_EXIT_SELECTION = 3;
+    private static final int ADMIN_MAX_SELECTION = 3;
+    private ArrayList<BankAccount> userAccounts;
     private BankAccount currentAccount;
     private Scanner keyboardInput;
-
+    private BankAdmin admin;
+    private FinancialProfileCollector profileCollector;
+    private FinancialProfile finprofile; 
+   
     public MainMenu() {
-        this.userAccount1 = new BankAccount();
-        this.currentAccount = this.userAccount1;
+        this.userAccounts = new ArrayList<BankAccount>();
+        userAccounts.add(new BankAccount());
+        this.currentAccount = userAccounts.get(0);
         this.keyboardInput = new Scanner(System.in);
+        this.admin = null;
+        this.profileCollector = new FinancialProfileCollector(keyboardInput);
     }
 
     public void displayOptions() {
-        System.out.println("Welcome to the 237 Bank App! You are currently using account " + this.currentAccount.getID());
+        System.out.println("Welcome to the 237 Bank App! You are currently using account " + this.currentAccount.getID() + ": " + this.currentAccount.getName());
         System.out.println("1. Make a deposit");
         System.out.println("2. Make a withdraw"); 
         System.out.println("3. Check your balance"); 
         System.out.println("4. Check transaction history"); 
         System.out.println("5. Create additional account"); 
         System.out.println("6. Switch account");
-        System.out.println("7. Close your account");
-        System.out.println("8. Transfer money");
-        System.out.println("9. Exit the app");
+        System.out.println("7. Rename current account");
+        System.out.println("8. Close your account");
+        System.out.println("9. Reopen an account");
+        System.out.println("10. Transfer money");
+        System.out.println("11. Enter admin controls");
+        System.out.println("12. Create a financial profile");
+        System.out.println("13. Use the home affordability calculator");
+        System.out.println("14. Exit the app");
     }
 
     public int getUserSelection(int max) {
@@ -47,9 +58,7 @@ public class MainMenu {
         return selection;
     }
 
-
-
-    public void processInput(int selection) {
+    public void processInput(int selection) {    
         switch (selection) {
             case 1:
                 performDeposit();
@@ -64,28 +73,45 @@ public class MainMenu {
                 viewTransactions();
                 break;
             case 5:
-                if (!HAS_ADDITIONAL) {
-                    createAdditionalAccount();
-                    switchAccount();
-                } else {
-                    System.out.println("You already have an additional account. Press 6 to switch.");
-                }
+                createAdditionalAccount();
+                switchAccount(userAccounts.size()-1);
                 break;
-                
             case 6:
-                if(HAS_ADDITIONAL) {
+                if(userAccounts.size() > 1) {
                     switchAccount();
                 } else {
                     System.out.println("You have no additional account. Press 5 to make one.");
                 }
                 break;
             case 7:
-                performCloseAccount();
+                renameCurrentAccount();
                 break;
             case 8:
-                performTransfer();
+                performCloseAccount();
                 break;
             case 9:
+                reopenClosedAccount();
+                break;
+            case 10:
+                performTransfer();
+                break;
+            case 11:
+                adminMenu();
+                break;
+            case 12:
+                System.out.println("The finanical profile"); 
+                this.finprofile = profileCollector.collectFromUser();
+                break; 
+            case 13:
+                System.out.println("Home affordadiblity calculator section \n"); 
+                if(finprofile == null) {
+                    System.out.println("Please create a financial profile first (option 12). \n");
+                } else {
+                    int maxHomePrice = AffordabilityCalculator.calculateMaxHomePrice(finprofile);
+                    System.out.println("Based on your financial profile, you can afford a home priced up to: $" + maxHomePrice);
+                }
+                break; 
+            case 14:
                 System.out.println("Exiting the app. Goodbye!");
                 break;    
             default:
@@ -94,43 +120,146 @@ public class MainMenu {
         // we want to break after user selects an option 
     }
 
+    public BankAccount selectAccount() {
+        ArrayList<BankAccount> openAccounts = getOpenAccounts();
+
+        if (openAccounts.isEmpty()) {
+            System.out.println("There are no open accounts available.");
+            return null;
+        }
+
+        System.out.println("Choose an account: ");
+        for (int i = 0; i < openAccounts.size(); i++) {
+            BankAccount account = openAccounts.get(i);
+            System.out.println((i + 1) + ". " + account.getName()
+                + " (ID: " + account.getID() + ")");
+        }
+
+        int selection = getUserSelection(openAccounts.size());
+        return openAccounts.get(selection - 1);
+    }
+
+    private ArrayList<BankAccount> getOpenAccounts() {
+        ArrayList<BankAccount> openAccounts = new ArrayList<BankAccount>();
+        for (BankAccount account : userAccounts) {
+            if (!account.isClosed()) {
+                openAccounts.add(account);
+            }
+        }
+        return openAccounts;
+    }
+
     public void createAdditionalAccount() {
-        this.userAccount2 = new BankAccount();
-        HAS_ADDITIONAL = true;
+        keyboardInput.nextLine();
+        String accountName = promptForUniqueAccountName();
+        userAccounts.add(new BankAccount(accountName));
+    }
+
+    private String promptForUniqueAccountName() {
+        while (true) {
+            String accountName = readAccountName();
+            if (isBlankAccountName(accountName)) {
+                System.out.println("Please input a non-blank name.");
+                continue;
+            }
+            if (isDuplicateAccountName(accountName)) {
+                System.out.println("Please input a unique account name.");
+                continue;
+            }
+            return accountName;
+        }
+    }
+
+    private String readAccountName() {
+        System.out.print("Name your new account: ");
+        try {
+            return keyboardInput.nextLine();
+        } catch (Exception e) {
+            System.out.println("Please input a proper string.");
+            return "";
+        }
+    }
+
+    private boolean isBlankAccountName(String accountName) {
+        return accountName == null || accountName.isBlank();
+    }
+
+    private boolean isDuplicateAccountName(String accountName) {
+        for (BankAccount account : userAccounts) {
+            if (account.getName().equals(accountName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void switchAccount() {
-        this.currentAccount = (this.currentAccount == this.userAccount1) ? this.userAccount2 : this.userAccount1;
+        this.currentAccount = selectAccount();
+    }
+
+    public void switchAccount(int accountNum){
+        this.currentAccount = userAccounts.get(accountNum);
     }
 
     public BankAccount getCurrentAccount() {
         return this.currentAccount;
     }
 
-    public boolean hasAdditionalAccount() {
-        return HAS_ADDITIONAL;
+    public void renameCurrentAccount() {
+        keyboardInput.nextLine();
+        String newName = readRenameName();
+
+        if (currentAccount.isClosed()) {
+            throw new IllegalStateException("Closed accounts cannot be renamed.");
+        }
+        if (isBlankAccountName(newName)) {
+            throw new IllegalArgumentException("Please input a non-blank name.");
+        }
+        if (isDuplicateRename(newName)) {
+            throw new IllegalArgumentException("Please input a unique account name.");
+        }
+
+        currentAccount.renameAccount(newName);
+        System.out.println("Account renamed successfully.");
     }
 
-    public BankAccount getSecondAccount() {
-        return this.userAccount2;
+    private String readRenameName() {
+        System.out.print("Enter a new account name: ");
+        return keyboardInput.nextLine();
+    }
+
+    private boolean isDuplicateRename(String newName) {
+        for (BankAccount account : userAccounts) {
+            if (account != currentAccount && account.getName().equals(newName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void performDeposit() {
-        double depositAmount = -1;
-        while(depositAmount < 0) {
-            System.out.print("How much would you like to deposit: ");
+        double depositAmount = promptForNonNegativeAmount(
+            "How much would you like to deposit: "
+        );
+        currentAccount.deposit(depositAmount);
+        System.out.println("Deposit successful!");
+    }
+
+    private double promptForNonNegativeAmount(String prompt) {
+        while (true) {
+            System.out.print(prompt);
             try {
-                depositAmount = keyboardInput.nextDouble();
-                if (depositAmount < 0) {
+                double amount = keyboardInput.nextDouble();
+                if (amount < 0) {
                     System.out.println("Please enter a non-negative amount.");
+                    continue;
                 }
+                return amount;
             } catch (InputMismatchException e) {
                 System.out.println("Invalid amount. Try again.");
                 keyboardInput.nextLine();
             }
         }
-        currentAccount.deposit(depositAmount);
-        System.out.println("Deposit successful!");
     }
 
     public void checkBalance() {
@@ -138,28 +267,26 @@ public class MainMenu {
     }
 
     public void performWithDraw() {
-        double withdrawAmount = 0; 
-        boolean isValid = false; 
-        while(!isValid) {
-            System.out.print("How much would you like to withdraw: ");
-            try {
-                withdrawAmount = keyboardInput.nextDouble();
-                if(withdrawAmount < 0) {
-                    System.out.println("You have entered a negative number, please try again.");
-                }
-                else if(currentAccount.getBalance() < withdrawAmount) {
-                    System.out.println("You are unable to withdraw more than you already have.");
-                }
-                else {
-                    isValid = true; 
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid amount. Try again.");
-                keyboardInput.nextLine();
-            }
-        }
+        double withdrawAmount = promptForValidWithdrawAmount();
         currentAccount.withdraw(withdrawAmount);
         System.out.println("Withdrawal successful!");
+    }
+
+    private double promptForValidWithdrawAmount() {
+        while (true) {
+            double withdrawAmount = promptForNonNegativeAmount(
+                "How much would you like to withdraw: "
+            );
+            if (hasInsufficientFunds(withdrawAmount)) {
+                System.out.println("You are unable to withdraw more than you already have.");
+                continue;
+            }
+            return withdrawAmount;
+        }
+    }
+
+    private boolean hasInsufficientFunds(double amount) {
+        return currentAccount.getBalance() < amount;
     }
 
     public void viewTransactions() {
@@ -184,53 +311,176 @@ public class MainMenu {
         switchAccount();
     }
 
-    public void performTransfer() {
-        BankAccount fromAccount = currentAccount;
-        int toChoice = -1;
+    public void reopenClosedAccount() {
+        BankAccount accountToReopen = selectClosedAccount();
 
-        while (toChoice != 1 && toChoice != 2) {
-            System.out.print("Transfer TO account (1 or 2): ");
-            try {
-                toChoice = keyboardInput.nextInt();
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid input. Enter 1 or 2.");
-                keyboardInput.nextLine();
+        if (accountToReopen == null) {
+            System.out.println("There are no closed accounts.");
+            return;
+        }
+
+        accountToReopen.reopenAccount();
+        System.out.println("Account reopened successfully.");
+    }
+
+    private BankAccount selectClosedAccount() {
+        ArrayList<BankAccount> closedAccounts = getClosedAccounts();
+        if (closedAccounts.isEmpty()) {
+            return null;
+        }
+        System.out.println("Choose an account to reopen:");
+        for (int i = 0; i < closedAccounts.size(); i++) {
+            BankAccount account = closedAccounts.get(i);
+            System.out.println((i + 1) + ". " + account.getName());
+        }
+
+        int selection = getUserSelection(closedAccounts.size());
+        return closedAccounts.get(selection - 1);
+    }
+
+    private ArrayList<BankAccount> getClosedAccounts() {
+        ArrayList<BankAccount> closedAccounts = new ArrayList<>();
+
+        for (BankAccount account : userAccounts) {
+            if (account.isClosed()) {
+                closedAccounts.add(account);
             }
         }
 
-        BankAccount toAccount = (toChoice == 1) ? userAccount1 : userAccount2;
+        return closedAccounts;
+    }
+
+    public void performTransfer() {
+        BankAccount fromAccount = currentAccount;
+        BankAccount toAccount = selectTransferTargetAccount();
 
         if (toAccount == null) {
-            System.out.println("That account does not exist.");
             return;
         }
+
+        double transferAmount = promptForNonNegativeAmount(
+            "How much would you like to transfer: "
+        );
+        executeTransfer(fromAccount, toAccount, transferAmount);
+    }
+
+    private BankAccount selectTransferTargetAccount() {
+        BankAccount toAccount = selectAccount();
 
         if (toAccount == currentAccount) {
             System.out.println("You must choose a different account.");
-            return;
+            return null;
         }
 
-        double transferAmount = -1;
-        while(transferAmount < 0) {
-            System.out.print("How much would you like to transfer: ");
-            try {
-                transferAmount = keyboardInput.nextDouble();
-                if (transferAmount < 0) {
-                    System.out.println("Please enter a non-negative amount.");
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid amount. Try again.");
-                keyboardInput.nextLine();
-            }
-        }
+        return toAccount;
+    }
 
+    private void executeTransfer(BankAccount fromAccount, BankAccount toAccount, double amount) {
         try {
-            fromAccount.transferTo(toAccount, transferAmount);
+            fromAccount.transferTo(toAccount, amount);
             System.out.println("Transfer successful!");
         } catch (IllegalArgumentException e) {
             System.out.println("Transfer failed.");
         }
+    }
 
+    public int getAccountCount() {
+        return userAccounts.size();
+    }
+
+    public void adminMenu(){
+        int adminSelection = -1;
+        if (!checkPassword()){
+            adminSelection = ADMIN_EXIT_SELECTION; // set the selection to automatically exit the admin menu
+            System.out.println("Incorrect password, exiting admin mode.");
+        }
+        while(adminSelection != ADMIN_EXIT_SELECTION){
+            displayAdminOptions();
+            adminSelection = getUserSelection(ADMIN_MAX_SELECTION);
+            processAdminInput(adminSelection);
+        }
+    }
+
+    public boolean checkPassword(){
+        if (this.admin == null){
+            System.out.println("Please input a password for the bank admin.");
+            String password = readPassword();
+            if (password == ""){
+                return false;
+            } else {
+                this.admin = new BankAdmin(password);
+                return true;
+            }
+        } else {
+            System.out.print("Password: ");
+            String password = readPassword();
+            return admin.checkPassword(password);
+        }
+    }
+
+    public String readPassword(){
+        try {
+            keyboardInput.nextLine(); //clear the line
+            return keyboardInput.nextLine();
+        } catch (Exception e) {
+            System.out.println("Please try again with a proper string.");
+            return "";
+        }
+    }
+
+    public void displayAdminOptions(){
+        System.out.println("Welcome to admin mode. Please select one of the administrative options below.");
+        System.out.println("1. Collect fees");
+        System.out.println("2. Make an interest payment."); 
+        System.out.println("3. Exit admin mode.");
+    }
+
+    public void processAdminInput(int selection){
+        switch (selection) {
+            case 1:
+                adminCollectFees();
+                break;
+            case 2:
+                adminDepositInterest();
+                break;
+            case 3:
+                System.out.println("Exiting admin mode.");
+                break;
+            default:
+                System.out.println("Unknown selection.");
+        }
+    }
+
+    public void adminCollectFees() {
+        BankAccount collectionAccount = selectAccount();
+        double feeAmount = promptForNonNegativeAmount(
+            "How much would you like to charge as a fee: "
+        );
+        applyAdminFee(collectionAccount, feeAmount);
+    }
+
+    private void applyAdminFee(BankAccount account, double feeAmount) {
+        try {
+            admin.collectFees(account, feeAmount);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid amount. Fee collection cancelled.");
+        }
+    }
+
+    public void adminDepositInterest() {
+        BankAccount interestAccount = selectAccount();
+        double depositAmount = promptForNonNegativeAmount(
+            "How much would you like to deposit: "
+        );
+        applyAdminInterestDeposit(interestAccount, depositAmount);
+    }
+
+    private void applyAdminInterestDeposit(BankAccount account, double depositAmount) {
+        try {
+            admin.depositInterest(account, depositAmount);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid amount. Desposit cancelled.");
+        }
     }
 
     public void run() {
@@ -247,5 +497,4 @@ public class MainMenu {
         MainMenu bankApp = new MainMenu();
         bankApp.run();
     }
-
 }
