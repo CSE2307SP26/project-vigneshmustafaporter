@@ -8,8 +8,8 @@ public class MainMenu {
 
     private static final int EXIT_SELECTION = 14;
     private static final int MAX_SELECTION = 14;
-    private static final int ADMIN_EXIT_SELECTION = 3;
-    private static final int ADMIN_MAX_SELECTION = 3;
+    private static final int ADMIN_EXIT_SELECTION = 5;
+    private static final int ADMIN_MAX_SELECTION = 5;
     private ArrayList<BankAccount> userAccounts;
     private BankAccount currentAccount;
     private Scanner keyboardInput;
@@ -312,6 +312,7 @@ public class MainMenu {
     }
 
     public void reopenClosedAccount() {
+        System.out.println("Choose an account to reopen:");
         BankAccount accountToReopen = selectClosedAccount();
 
         if (accountToReopen == null) {
@@ -323,12 +324,27 @@ public class MainMenu {
         System.out.println("Account reopened successfully.");
     }
 
+    private BankAccount selectOpenAccount() {
+        ArrayList<BankAccount> openAccounts = getOpenAccounts();
+        if (openAccounts.isEmpty()) {
+            return null;
+        }
+
+        for (int i = 0; i < openAccounts.size(); i++) {
+            BankAccount account = openAccounts.get(i);
+            System.out.println((i + 1) + ". " + account.getName());
+        }
+
+        int selection = getUserSelection(openAccounts.size());
+        return openAccounts.get(selection - 1);
+    }
+
     private BankAccount selectClosedAccount() {
         ArrayList<BankAccount> closedAccounts = getClosedAccounts();
         if (closedAccounts.isEmpty()) {
             return null;
         }
-        System.out.println("Choose an account to reopen:");
+
         for (int i = 0; i < closedAccounts.size(); i++) {
             BankAccount account = closedAccounts.get(i);
             System.out.println((i + 1) + ". " + account.getName());
@@ -432,7 +448,9 @@ public class MainMenu {
         System.out.println("Welcome to admin mode. Please select one of the administrative options below.");
         System.out.println("1. Collect fees");
         System.out.println("2. Make an interest payment."); 
-        System.out.println("3. Exit admin mode.");
+        System.out.println("3. Freeze an account.");
+        System.out.println("4. Unfreeze an account.");
+        System.out.println("5. Exit admin mode.");
     }
 
     public void processAdminInput(int selection){
@@ -444,6 +462,12 @@ public class MainMenu {
                 adminDepositInterest();
                 break;
             case 3:
+                adminFreezeAccount();
+                break;
+            case 4:
+                adminUnfreezeAccount();
+                break;
+            case 5:
                 System.out.println("Exiting admin mode.");
                 break;
             default:
@@ -481,6 +505,37 @@ public class MainMenu {
         } catch (IllegalArgumentException e) {
             System.out.println("Invalid amount. Desposit cancelled.");
         }
+    }
+
+    private void adminFreezeAccount() {
+        System.out.println("Choose an account to freeze:");
+        BankAccount account = selectOpenAccount();
+        if (account == null){
+            System.out.println("No open accounts to freeze.");
+            return;
+        }
+        boolean successfulFreeze = admin.freezeAccount(account);
+        if (successfulFreeze){
+            System.out.println("Account successfully frozen.");
+        } else {
+            System.out.println("Please freeze an account that isn't frozen or closed.");
+        }
+    }
+
+    private void adminUnfreezeAccount() {
+        System.out.println("Choose an account to unfreeze:");
+        BankAccount account = selectClosedAccount();
+        if (account == null){
+            System.out.println("No accounts to unfreeze.");
+            return;
+        }
+        boolean successfulUnfreeze = admin.unfreezeAccount(account);
+        if (successfulUnfreeze){
+            System.out.println("Account successfully unfrozen.");
+        } else {
+            System.out.println("Please unfreeze an account that is frozen or closed.");
+        }
+
     }
 
     public void run() {
