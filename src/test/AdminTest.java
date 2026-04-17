@@ -80,4 +80,106 @@ public class AdminTest {
         assertEquals(false, testAdmin.checkPassword("Password"));
     }
 
+    @Test
+    public void testFreezeDeposit(){
+        BankAdmin testAdmin = new BankAdmin("");
+        BankAccount testAccount = new BankAccount();
+        testAccount.deposit(10);
+        testAdmin.freezeAccount(testAccount);
+        try {
+            testAccount.deposit(10);
+            fail();
+        } catch (IllegalStateException e) {
+            //do nothing, test passes
+        }
+    }
+
+    @Test
+    public void testFreezeWithdraw(){
+        BankAdmin testAdmin = new BankAdmin("");
+        BankAccount testAccount = new BankAccount();
+        testAccount.deposit(10);
+        testAdmin.freezeAccount(testAccount);
+        try {
+            testAccount.withdraw(10);
+            fail();
+        } catch (IllegalStateException e) {
+            //do nothing, test passes
+        }
+    }
+
+    @Test
+    public void testFreezeBalance(){
+        BankAdmin testAdmin = new BankAdmin("");
+        BankAccount testAccount = new BankAccount();
+        testAccount.deposit(10);
+        testAdmin.freezeAccount(testAccount);
+        try {
+            testAccount.getBalance();
+            fail();
+        } catch (IllegalStateException e) {
+            //do nothing, test passes
+        }
+    }
+
+    @Test
+    public void testFreeze(){
+        BankAdmin testAdmin = new BankAdmin("");
+        BankAccount testAccount = new BankAccount();
+        testAccount.deposit(10);
+        testAdmin.freezeAccount(testAccount);
+        assertEquals(testAccount.isClosed(), true);
+    }
+
+    public void testUnfreezeDeposit(){
+        BankAdmin testAdmin = new BankAdmin("");
+        BankAccount testAccount = new BankAccount();
+        testAccount.deposit(10);
+        testAdmin.freezeAccount(testAccount);
+        testAdmin.unfreezeAccount(testAccount);
+        try {
+            testAccount.deposit(10);
+        } catch (IllegalStateException e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void testUnfreezeWithdraw(){
+        BankAdmin testAdmin = new BankAdmin("");
+        BankAccount testAccount = new BankAccount();
+        testAccount.deposit(10);
+        testAdmin.freezeAccount(testAccount);
+        testAdmin.unfreezeAccount(testAccount);
+        try {
+            testAccount.withdraw(10);
+        } catch (IllegalStateException e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void testUnfreezeBalance(){
+        BankAdmin testAdmin = new BankAdmin("");
+        BankAccount testAccount = new BankAccount();
+        testAccount.deposit(10);
+        testAdmin.freezeAccount(testAccount);
+        testAdmin.unfreezeAccount(testAccount);
+        try {
+            testAccount.getBalance();
+        } catch (IllegalStateException e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void testUnfreeze(){
+        BankAdmin testAdmin = new BankAdmin("");
+        BankAccount testAccount = new BankAccount();
+        testAccount.deposit(10);
+        testAdmin.freezeAccount(testAccount);
+        testAdmin.unfreezeAccount(testAccount);
+        assertEquals(testAccount.isClosed(), false);
+    }
+
 }
