@@ -66,4 +66,6 @@ Everything should be working fine.
 2. A bank user should be able to connect his/her credit card to one bank account. (Birch)
 3. A bank user should be able to view their most recent transactions (Vignesh)
 4. A bank user should be able to see to set a budget and see their main spending categories (Vignesh)
-5. A bank admin should be able to freeze an bank account (Porter) 
+5. A bank admin should be able to freeze an bank account (Porter)
+6. A bank teller should be able to report a user's account for suspicious activity to the bank admin. (Mustafa)
+7. A bank user should be able to change their password. (Mustafa)
