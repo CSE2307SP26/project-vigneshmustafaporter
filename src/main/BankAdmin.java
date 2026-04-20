@@ -33,4 +33,21 @@ public class BankAdmin {
             throw new IllegalArgumentException();
         }
     }
+
+    public boolean freezeAccount(BankAccount account){
+        if (account.isClosed()){
+            return false;
+        }
+        account.closeAccount();
+        return true;
+    }
+
+    public boolean unfreezeAccount(BankAccount account){
+        if (!account.isClosed()){
+            return false;
+        }
+        account.reopenAccount();
+        return true;
+    }
+
 }
