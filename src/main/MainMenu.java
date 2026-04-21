@@ -6,8 +6,8 @@ import java.util.ArrayList;
 
 public class MainMenu {
 
-    private static final int EXIT_SELECTION = 14;
-    private static final int MAX_SELECTION = 14;
+    private static final int EXIT_SELECTION = 15;
+    private static final int MAX_SELECTION = 15;
     private static final int ADMIN_EXIT_SELECTION = 5;
     private static final int ADMIN_MAX_SELECTION = 5;
     private ArrayList<BankAccount> userAccounts;
@@ -42,7 +42,8 @@ public class MainMenu {
         System.out.println("11. Enter admin controls");
         System.out.println("12. Create a financial profile");
         System.out.println("13. Use the home affordability calculator");
-        System.out.println("14. Exit the app");
+        System.out.println("14. Update password");
+        System.out.println("15. Exit the app");
     }
 
     public int getUserSelection(int max) {
@@ -112,8 +113,11 @@ public class MainMenu {
                     int maxHomePrice = AffordabilityCalculator.calculateMaxHomePrice(finprofile);
                     System.out.println("Based on your financial profile, you can afford a home priced up to: $" + maxHomePrice);
                 }
-                break; 
+                break;
             case 14:
+                updatePassword();
+                break;
+            case 15:
                 System.out.println("Exiting the app. Goodbye!");
                 break;    
             default:
@@ -202,11 +206,26 @@ public class MainMenu {
         keyboardInput.nextLine();
         String triedPassword = readString();
 
-        if (selectedAccount != null && selectedAccount.checkPassword(triedPassword)) {
+        if (selectedAccount.checkPassword(triedPassword)) {
             this.currentAccount = selectedAccount;
             System.out.println("Sign In Successful!");
         } else {
             System.out.println("Account Sign In Failed: Incorrect Password!");
+        }
+    }
+
+    public void updatePassword() {
+        System.out.println("Please input current password: ");
+        keyboardInput.nextLine();
+        String supposedPassword = readString();
+        
+        if(currentAccount.checkPassword(supposedPassword)) {
+            System.out.println("Please input new password: ");
+            String newPassword = readString();
+            currentAccount.setPassword(newPassword);
+            System.out.println("Password Successfully Updated!");
+        } else {
+            System.out.println("Unable to Update Password: Wrong Current Password!");
         }
     }
 
