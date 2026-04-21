@@ -80,7 +80,7 @@ public class AdminTest {
     @Test
     public void testFreezeDeposit(){
         BankAdmin testAdmin = new BankAdmin("");
-        BankAccount testAccount = new BankAccount();
+        BankAccount testAccount = new BankAccount("test", "test");
         testAccount.deposit(10);
         testAdmin.freezeAccount(testAccount);
         try {
@@ -94,7 +94,7 @@ public class AdminTest {
     @Test
     public void testFreezeWithdraw(){
         BankAdmin testAdmin = new BankAdmin("");
-        BankAccount testAccount = new BankAccount();
+        BankAccount testAccount = new BankAccount("test", "test");
         testAccount.deposit(10);
         testAdmin.freezeAccount(testAccount);
         try {
@@ -108,7 +108,7 @@ public class AdminTest {
     @Test
     public void testFreezeBalance(){
         BankAdmin testAdmin = new BankAdmin("");
-        BankAccount testAccount = new BankAccount();
+        BankAccount testAccount = new BankAccount("test", "test");
         testAccount.deposit(10);
         testAdmin.freezeAccount(testAccount);
         try {
@@ -122,7 +122,7 @@ public class AdminTest {
     @Test
     public void testFreeze(){
         BankAdmin testAdmin = new BankAdmin("");
-        BankAccount testAccount = new BankAccount();
+        BankAccount testAccount = new BankAccount("test", "test");
         testAccount.deposit(10);
         testAdmin.freezeAccount(testAccount);
         assertEquals(testAccount.isClosed(), true);
@@ -130,7 +130,7 @@ public class AdminTest {
 
     public void testUnfreezeDeposit(){
         BankAdmin testAdmin = new BankAdmin("");
-        BankAccount testAccount = new BankAccount();
+        BankAccount testAccount = new BankAccount("test", "test");
         testAccount.deposit(10);
         testAdmin.freezeAccount(testAccount);
         testAdmin.unfreezeAccount(testAccount);
@@ -144,7 +144,7 @@ public class AdminTest {
     @Test
     public void testUnfreezeWithdraw(){
         BankAdmin testAdmin = new BankAdmin("");
-        BankAccount testAccount = new BankAccount();
+        BankAccount testAccount = new BankAccount("test", "test");
         testAccount.deposit(10);
         testAdmin.freezeAccount(testAccount);
         testAdmin.unfreezeAccount(testAccount);
@@ -158,7 +158,7 @@ public class AdminTest {
     @Test
     public void testUnfreezeBalance(){
         BankAdmin testAdmin = new BankAdmin("");
-        BankAccount testAccount = new BankAccount();
+        BankAccount testAccount = new BankAccount("test", "test");
         testAccount.deposit(10);
         testAdmin.freezeAccount(testAccount);
         testAdmin.unfreezeAccount(testAccount);
@@ -172,7 +172,7 @@ public class AdminTest {
     @Test
     public void testUnfreeze(){
         BankAdmin testAdmin = new BankAdmin("");
-        BankAccount testAccount = new BankAccount();
+        BankAccount testAccount = new BankAccount("test", "test");
         testAccount.deposit(10);
         testAdmin.freezeAccount(testAccount);
         testAdmin.unfreezeAccount(testAccount);

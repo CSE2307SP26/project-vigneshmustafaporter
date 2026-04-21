@@ -25,6 +25,10 @@ public class BankAccount {
         return this.password.equals(input);
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public int getID() {
         return this.ID;
     }
