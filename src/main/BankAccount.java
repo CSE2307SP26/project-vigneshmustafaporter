@@ -10,23 +10,20 @@ public class BankAccount {
     private int ID;
     private static int accountIDs = 0;
     public String name;
+    private String password;
 
-    public BankAccount() {
-        this.name = "Main";
-        this.balance = 0;
-        this.transactions = new ArrayList<Double>();
-        this.closed = false;
-        this.ID = ++BankAccount.accountIDs;
-    }
-
-    public BankAccount(String name) {
+    public BankAccount(String name, String password) {
         this.name = name;
+        this.password = password;
         this.balance = 0;
         this.transactions = new ArrayList<Double>();
         this.closed = false;
         this.ID = ++BankAccount.accountIDs;
     }
     
+    public boolean checkPassword(String input) {
+        return this.password.equals(input);
+    }
 
     public int getID() {
         return this.ID;
