@@ -67,5 +67,6 @@ Everything should be working fine.
 3. Refactor FinancialProfile to get rid of Affordability Calculator and move everything to FinancialProfile(no static methods) (Vignesh)
 4. A bank admin should be able to generate a report of all the accounts that are associated with the bank (Vignesh)
 5. A bank admin should be able to freeze an bank account (Porter)
-6. A bank teller should be able to report a user's account for suspicious activity to the bank admin. (Mustafa)
-7. A bank user should be able to change their password. (Mustafa)
+6. A bank admin should be able to view a list of stats for the accounts in the app (Porter)
+7. A bank teller should be able to report a user's account for suspicious activity to the bank admin. (Mustafa)
+8. A bank user should be able to change their password. (Mustafa)
