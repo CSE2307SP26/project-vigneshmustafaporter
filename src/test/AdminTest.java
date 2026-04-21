@@ -3,18 +3,15 @@ package test;
 import main.BankAccount;
 import main.BankAdmin;
 
+import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
-
-import java.beans.Transient;
-
-import org.junit.jupiter.api.Test;
 
 public class AdminTest {
     
     @Test
     public void testFees() {
-        BankAccount testAccount = new BankAccount();
+        BankAccount testAccount = new BankAccount("test", "test");
         testAccount.deposit(50);
         BankAdmin testAdmin = new BankAdmin("");
         testAdmin.collectFees(testAccount, 10);
@@ -23,7 +20,7 @@ public class AdminTest {
 
     @Test
     public void testInvalidFees() {
-        BankAccount testAccount = new BankAccount();
+        BankAccount testAccount = new BankAccount("test", "test");
         testAccount.deposit(50);
         BankAdmin testAdmin = new BankAdmin("");
         try {
@@ -36,7 +33,7 @@ public class AdminTest {
 
     @Test
     public void testInterest() {
-        BankAccount testAccount = new BankAccount();
+        BankAccount testAccount = new BankAccount("test", "test");
         testAccount.deposit(50);
         BankAdmin testAdmin = new BankAdmin("");
         testAdmin.depositInterest(testAccount, 10);
@@ -45,7 +42,7 @@ public class AdminTest {
 
     @Test
     public void testInvalidInterest() {
-        BankAccount testAccount = new BankAccount();
+        BankAccount testAccount = new BankAccount("test", "test");
         testAccount.deposit(50);
         BankAdmin testAdmin = new BankAdmin("");
         try {
@@ -58,7 +55,7 @@ public class AdminTest {
 
     @Test
     public void testTooMuchFees() {
-        BankAccount testAccount = new BankAccount();
+        BankAccount testAccount = new BankAccount("test", "test");
         testAccount.deposit(50);
         BankAdmin testAdmin = new BankAdmin("");
         try {

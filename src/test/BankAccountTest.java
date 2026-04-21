@@ -4,11 +4,8 @@ import main.BankAccount;
 import main.MainMenu;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.*;
-
-import java.beans.Transient;
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
@@ -17,78 +14,77 @@ public class BankAccountTest {
 
     @Test
     public void testDeposit() {
-        BankAccount testAccount = new BankAccount();
+        BankAccount testAccount = new BankAccount("test", "test");
         testAccount.deposit(50);
         assertEquals(50, testAccount.getBalance(), 0.01);
     }
 
     @Test
     public void testInvalidDeposit() {
-        BankAccount testAccount = new BankAccount();
+        BankAccount testAccount = new BankAccount("test", "test");
         try {
             testAccount.deposit(-50);
             fail();
         } catch (IllegalArgumentException e) {
-            //do nothing, test passes
+            // do nothing, test passes
         }
     }
 
     @Test
-public void testWithdraw() {
-    BankAccount testAccount = new BankAccount();
-    testAccount.deposit(80);
-    testAccount.withdraw(30);
+    public void testWithdraw() {
+        BankAccount testAccount = new BankAccount("test", "test");
+        testAccount.deposit(80);
+        testAccount.withdraw(30);
 
-    assertEquals(50, testAccount.getBalance(), 0.01);
-}
-
-@Test
-public void testWithdrawOverLimit() {
-    BankAccount testAccount = new BankAccount();
-    testAccount.deposit(50);
-
-    try {
-        testAccount.withdraw(100);
-        fail();
-    } catch (IllegalArgumentException e) {
-        // pass
+        assertEquals(50, testAccount.getBalance(), 0.01);
     }
 
-    assertEquals(50, testAccount.getBalance(), 0.01);
-}
+    @Test
+    public void testWithdrawOverLimit() {
+        BankAccount testAccount = new BankAccount("test", "test");
+        testAccount.deposit(50);
 
-@Test
-public void testInvalidWithdraw() {
-    BankAccount testAccount = new BankAccount();
+        try {
+            testAccount.withdraw(100);
+            fail();
+        } catch (IllegalArgumentException e) {
+            // pass
+        }
 
-    try {
-        testAccount.withdraw(-20);
-        fail();
-    } catch (IllegalArgumentException e) {
-        // pass
+        assertEquals(50, testAccount.getBalance(), 0.01);
     }
-}
 
-@Test
-public void testCheckBalance() {
-    MainMenu testMenu = new MainMenu();
-    testMenu.getCurrentAccount().deposit(75);
+    @Test
+    public void testInvalidWithdraw() {
+        BankAccount testAccount = new BankAccount("test", "test");
 
-    java.io.ByteArrayOutputStream output =
-        new java.io.ByteArrayOutputStream();
-    java.io.PrintStream originalOut = System.out;
-    System.setOut(new java.io.PrintStream(output));
+        try {
+            testAccount.withdraw(-20);
+            fail();
+        } catch (IllegalArgumentException e) {
+            // pass
+        }
+    }
 
-    testMenu.checkBalance();
+    @Test
+    public void testCheckBalance() {
+        MainMenu testMenu = new MainMenu();
+        testMenu.getCurrentAccount().deposit(75);
 
-    System.setOut(originalOut);
+        java.io.ByteArrayOutputStream output = new java.io.ByteArrayOutputStream();
+        java.io.PrintStream originalOut = System.out;
+        System.setOut(new java.io.PrintStream(output));
 
-    assertTrue(output.toString().contains("Current Balance is: 75.0"));
-}
+        testMenu.checkBalance();
+
+        System.setOut(originalOut);
+
+        assertTrue(output.toString().contains("Current Balance is: 75.0"));
+    }
 
     @Test
     public void testCloseAccount() {
-        BankAccount testAccount = new BankAccount();
+        BankAccount testAccount = new BankAccount("test", "test");
         testAccount.closeAccount();
         assertTrue(testAccount.isClosed());
 
@@ -96,27 +92,27 @@ public void testCheckBalance() {
             testAccount.closeAccount();
             fail();
         } catch (IllegalStateException e) {
-          //nothing
+            // nothing
         }
     }
 
     @Test
-public void testClosedAccountCannotDeposit() {
-    BankAccount testAccount = new BankAccount();
-    testAccount.closeAccount();
+    public void testClosedAccountCannotDeposit() {
+        BankAccount testAccount = new BankAccount("test", "test");
+        testAccount.closeAccount();
 
-    try {
-        testAccount.deposit(50);
-        fail();
-    } catch (IllegalStateException e) {
-        // pass
+        try {
+            testAccount.deposit(50);
+            fail();
+        } catch (IllegalStateException e) {
+            // pass
+        }
     }
-}
 
     @Test
     public void testTransfer() {
-        BankAccount fromAccount = new BankAccount();
-        BankAccount toAccount = new BankAccount();
+        BankAccount fromAccount = new BankAccount("test", "test");
+        BankAccount toAccount = new BankAccount("test", "test");
 
         fromAccount.deposit(100);
         fromAccount.transferTo(toAccount, 40);
@@ -128,159 +124,156 @@ public void testClosedAccountCannotDeposit() {
             fromAccount.transferTo(toAccount, 100);
             fail();
         } catch (IllegalArgumentException e) {
-          //nothing
+            // nothing
         }
     }
 
     @Test
-public void testTransferOverLimit() {
-    BankAccount fromAccount = new BankAccount();
-    BankAccount toAccount = new BankAccount();
+    public void testTransferOverLimit() {
+        BankAccount fromAccount = new BankAccount("test", "test");
+        BankAccount toAccount = new BankAccount("test", "test");
 
-    fromAccount.deposit(40);
+        fromAccount.deposit(40);
 
-    try {
-        fromAccount.transferTo(toAccount, 100);
-        fail();
-    } catch (IllegalArgumentException e) {
-        // pass
+        try {
+            fromAccount.transferTo(toAccount, 100);
+            fail();
+        } catch (IllegalArgumentException e) {
+            // pass
+        }
+
+        assertEquals(40, fromAccount.getBalance(), 0.01);
+        assertEquals(0, toAccount.getBalance(), 0.01);
     }
-
-    assertEquals(40, fromAccount.getBalance(), 0.01);
-    assertEquals(0, toAccount.getBalance(), 0.01);
-}
-
-@Test
-public void testNegativeTransfer() {
-    BankAccount fromAccount = new BankAccount();
-    BankAccount toAccount = new BankAccount();
-
-    fromAccount.deposit(100);
-
-    try {
-        fromAccount.transferTo(toAccount, -10);
-        fail();
-    } catch (IllegalArgumentException e) {
-        // pass
-    }
-}
-    
-    @Test
-public void testAdditionalAccountBoolean() {
-    System.setIn(new java.io.ByteArrayInputStream(
-        "\nTest Account\n".getBytes()
-    ));
-
-    MainMenu testMenu = new MainMenu();
-
-    assertEquals(1, testMenu.getAccountCount());
-
-    testMenu.createAdditionalAccount();
-
-    assertEquals(2, testMenu.getAccountCount());
-}
-
-@Test
-public void testAdditionalAccountBalance() {
-    System.setIn(new java.io.ByteArrayInputStream(
-        "\nSecond Account\n".getBytes()
-    ));
-
-    MainMenu testMenu = new MainMenu();
-    testMenu.getCurrentAccount().deposit(20);
-    testMenu.getCurrentAccount().withdraw(10);
-    testMenu.createAdditionalAccount();
-    testMenu.switchAccount(1);
-    testMenu.getCurrentAccount().deposit(50);
-    testMenu.getCurrentAccount().withdraw(30);
-
-    double accountTwoBalance = testMenu.getCurrentAccount().getBalance();
-    testMenu.switchAccount(0);
-    double accountOneBalance = testMenu.getCurrentAccount().getBalance();
-    assertEquals(20, accountTwoBalance, 0.01);
-    assertEquals(10, accountOneBalance, 0.01);
-}
 
     @Test
-public void testDuplicateAccountName() {
-    String simulatedInput = "Savings\nSavings2\n";
-    System.setIn(new java.io.ByteArrayInputStream(simulatedInput.getBytes()));
+    public void testNegativeTransfer() {
+        BankAccount fromAccount = new BankAccount("test", "test");
+        BankAccount toAccount = new BankAccount("test", "test");
 
-    MainMenu testMenu = new MainMenu();
-    testMenu.createAdditionalAccount();
+        fromAccount.deposit(100);
 
-    assertEquals(2, testMenu.getAccountCount());
-}
-
-@Test
-public void testRenameAccount() {
-    BankAccount testAccount = new BankAccount("Savings");
-
-    testAccount.renameAccount("Travel Fund");
-
-    assertEquals("Travel Fund", testAccount.getName());
-}
-
-@Test
-public void testRenameBlankName() {
-    BankAccount testAccount = new BankAccount("Savings");
-
-    try {
-        testAccount.renameAccount("");
-        fail();
-    } catch (IllegalArgumentException e) {
-        // pass
+        try {
+            fromAccount.transferTo(toAccount, -10);
+            fail();
+        } catch (IllegalArgumentException e) {
+            // pass
+        }
     }
-}
 
-@Test
-public void testRenameDuplicateName() {
-    MainMenu probeMenu = new MainMenu();
-    String originalName = probeMenu.getCurrentAccount().getName();
+    @Test
+    public void testAdditionalAccountBoolean() {
+        System.setIn(new java.io.ByteArrayInputStream(
+                "\nTest Account\n".getBytes()));
 
-    System.setIn(new java.io.ByteArrayInputStream(
-        ("\nSavings\n\n" + originalName + "\n").getBytes()
-    ));
+        MainMenu testMenu = new MainMenu();
 
-    MainMenu testMenu = new MainMenu();
-    testMenu.createAdditionalAccount();
-    testMenu.switchAccount(1);
+        assertEquals(1, testMenu.getAccountCount());
 
-    try {
-        testMenu.renameCurrentAccount();
-        fail();
-    } catch (IllegalArgumentException e) {
-        // pass
+        testMenu.createAccount();
+
+        assertEquals(2, testMenu.getAccountCount());
     }
-}
 
-@Test
-public void testReopenAccount() {
-    BankAccount testAccount = new BankAccount();
+    @Test
+    public void testAdditionalAccountBalance() {
+        System.setIn(new java.io.ByteArrayInputStream(
+                "\nSecond Account\n".getBytes()));
 
-    testAccount.closeAccount();
-    assertTrue(testAccount.isClosed());
+        MainMenu testMenu = new MainMenu();
+        testMenu.getCurrentAccount().deposit(20);
+        testMenu.getCurrentAccount().withdraw(10);
+        testMenu.createAccount();
+        testMenu.switchAccount(1);
+        testMenu.getCurrentAccount().deposit(50);
+        testMenu.getCurrentAccount().withdraw(30);
 
-    testAccount.reopenAccount();
+        double accountTwoBalance = testMenu.getCurrentAccount().getBalance();
+        testMenu.switchAccount(0);
+        double accountOneBalance = testMenu.getCurrentAccount().getBalance();
+        assertEquals(20, accountTwoBalance, 0.01);
+        assertEquals(10, accountOneBalance, 0.01);
+    }
 
-    assertFalse(testAccount.isClosed());
-}
+    @Test
+    public void testDuplicateAccountName() {
+        String simulatedInput = "Savings\nSavings2\n";
+        System.setIn(new java.io.ByteArrayInputStream(simulatedInput.getBytes()));
 
-@Test
-public void testReopenAlreadyOpenAccount() {
-    BankAccount testAccount = new BankAccount();
+        MainMenu testMenu = new MainMenu();
+        testMenu.createAccount();
 
-    try {
+        assertEquals(2, testMenu.getAccountCount());
+    }
+
+    @Test
+    public void testRenameAccount() {
+        BankAccount testAccount = new BankAccount("Savings", "test");
+
+        testAccount.renameAccount("Travel Fund");
+
+        assertEquals("Travel Fund", testAccount.getName());
+    }
+
+    @Test
+    public void testRenameBlankName() {
+        BankAccount testAccount = new BankAccount("Savings", "test");
+
+        try {
+            testAccount.renameAccount("");
+            fail();
+        } catch (IllegalArgumentException e) {
+            // pass
+        }
+    }
+
+    @Test
+    public void testRenameDuplicateName() {
+        MainMenu probeMenu = new MainMenu();
+        String originalName = probeMenu.getCurrentAccount().getName();
+
+        System.setIn(new java.io.ByteArrayInputStream(
+                ("\nSavings\n\n" + originalName + "\n").getBytes()));
+
+        MainMenu testMenu = new MainMenu();
+        testMenu.createAccount();
+        testMenu.switchAccount(1);
+
+        try {
+            testMenu.renameCurrentAccount();
+            fail();
+        } catch (IllegalArgumentException e) {
+            // pass
+        }
+    }
+
+    @Test
+    public void testReopenAccount() {
+        BankAccount testAccount = new BankAccount("test", "test");
+
+        testAccount.closeAccount();
+        assertTrue(testAccount.isClosed());
+
         testAccount.reopenAccount();
-        fail();
-    } catch (IllegalStateException e) {
-        // pass
-    }
-}
 
-    @Test    
+        assertFalse(testAccount.isClosed());
+    }
+
+    @Test
+    public void testReopenAlreadyOpenAccount() {
+        BankAccount testAccount = new BankAccount("test", "test");
+
+        try {
+            testAccount.reopenAccount();
+            fail();
+        } catch (IllegalStateException e) {
+            // pass
+        }
+    }
+
+    @Test
     public void testTransactionHistory() {
-        BankAccount testAccount = new BankAccount();
+        BankAccount testAccount = new BankAccount("test", "test");
         testAccount.deposit(50);
         testAccount.withdraw(30);
         ArrayList<Double> testTransactions = new ArrayList<Double>();
@@ -291,7 +284,7 @@ public void testReopenAlreadyOpenAccount() {
 
     @Test
     public void testAccountNames() {
-        BankAccount testAccount = new BankAccount("Test Name");
+        BankAccount testAccount = new BankAccount("Test Name", "test");
         assertEquals(testAccount.getName(), "Test Name");
     }
 }
