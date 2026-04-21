@@ -1,5 +1,5 @@
-// ...existing code...
 package main;
+
 import java.util.Scanner;
 import java.util.InputMismatchException;
 import java.util.ArrayList;
@@ -15,13 +15,14 @@ public class MainMenu {
     private Scanner keyboardInput;
     private BankAdmin admin;
     private FinancialProfileCollector profileCollector;
-    private FinancialProfile finprofile; 
+    private FinancialProfile finprofile;
    
     public MainMenu() {
-        this.userAccounts = new ArrayList<BankAccount>();
-        userAccounts.add(new BankAccount());
-        this.currentAccount = userAccounts.get(0);
         this.keyboardInput = new Scanner(System.in);
+        this.userAccounts = new ArrayList<BankAccount>();
+        System.out.println("Account Setup:");
+        createAccount();
+        this.currentAccount = userAccounts.get(0);
         this.admin = null;
         this.profileCollector = new FinancialProfileCollector(keyboardInput);
     }
@@ -73,7 +74,8 @@ public class MainMenu {
                 viewTransactions();
                 break;
             case 5:
-                createAdditionalAccount();
+                keyboardInput.nextLine();
+                createAccount();
                 switchAccount(userAccounts.size()-1);
                 break;
             case 6:
@@ -149,15 +151,17 @@ public class MainMenu {
         return openAccounts;
     }
 
-    public void createAdditionalAccount() {
-        keyboardInput.nextLine();
+    public void createAccount() {
+        System.out.print("Name your new account: ");
         String accountName = promptForUniqueAccountName();
-        userAccounts.add(new BankAccount(accountName));
+        System.out.print("Create your password: ");
+        String accountPassword = readString();
+        userAccounts.add(new BankAccount(accountName, accountPassword));
     }
 
     private String promptForUniqueAccountName() {
         while (true) {
-            String accountName = readAccountName();
+            String accountName = readString();
             if (isBlankAccountName(accountName)) {
                 System.out.println("Please input a non-blank name.");
                 continue;
@@ -170,8 +174,7 @@ public class MainMenu {
         }
     }
 
-    private String readAccountName() {
-        System.out.print("Name your new account: ");
+    private String readString() {
         try {
             return keyboardInput.nextLine();
         } catch (Exception e) {
@@ -194,10 +197,20 @@ public class MainMenu {
     }
 
     public void switchAccount() {
-        this.currentAccount = selectAccount();
+        BankAccount selectedAccount = selectAccount();
+        System.out.print("Input Password: ");
+        keyboardInput.nextLine();
+        String triedPassword = readString();
+
+        if (selectedAccount != null && selectedAccount.checkPassword(triedPassword)) {
+            this.currentAccount = selectedAccount;
+            System.out.println("Sign In Successful!");
+        } else {
+            System.out.println("Account Sign In Failed: Incorrect Password!");
+        }
     }
 
-    public void switchAccount(int accountNum){
+    public void switchAccount(int accountNum) {
         this.currentAccount = userAccounts.get(accountNum);
     }
 
