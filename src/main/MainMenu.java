@@ -8,8 +8,8 @@ public class MainMenu {
 
     private static final int EXIT_SELECTION = 15;
     private static final int MAX_SELECTION = 15;
-    private static final int ADMIN_EXIT_SELECTION = 5;
-    private static final int ADMIN_MAX_SELECTION = 5;
+    private static final int ADMIN_EXIT_SELECTION = 6;
+    private static final int ADMIN_MAX_SELECTION = 6;
     private ArrayList<BankAccount> userAccounts;
     private BankAccount currentAccount;
     private Scanner keyboardInput;
@@ -201,6 +201,12 @@ public class MainMenu {
     }
 
     public void switchAccount() {
+        while(getOpenAccounts().size() < 1){
+            System.out.println("You have no open accounts. Please create a new account.");
+            createAccount();
+            switchAccount(userAccounts.size()-1); //automatically switch to new account
+            return;
+        }
         BankAccount selectedAccount = selectAccount();
         System.out.print("Input Password: ");
         keyboardInput.nextLine();
@@ -482,7 +488,8 @@ public class MainMenu {
         System.out.println("2. Make an interest payment."); 
         System.out.println("3. Freeze an account.");
         System.out.println("4. Unfreeze an account.");
-        System.out.println("5. Exit admin mode.");
+        System.out.println("5. Show statistics.");
+        System.out.println("6. Exit admin mode.");
     }
 
     public void processAdminInput(int selection){
@@ -500,6 +507,9 @@ public class MainMenu {
                 adminUnfreezeAccount();
                 break;
             case 5:
+                adminShowStatistics();
+                break;
+            case 6:
                 System.out.println("Exiting admin mode.");
                 break;
             default:
@@ -568,6 +578,34 @@ public class MainMenu {
             System.out.println("Please unfreeze an account that is frozen or closed.");
         }
 
+    }
+
+    private void adminShowStatistics() {
+        ArrayList<BankAccount> openAccounts = getOpenAccounts();
+        
+        System.out.println("Maximum account balance:");
+        BankAccount maxAccount = admin.getMaximum(openAccounts);
+        if (maxAccount == null){
+            System.out.println("Error. No open accounts.");
+        } else {
+            System.out.println(maxAccount.getName() + " - " + maxAccount.getBalance());
+        }
+        
+        System.out.println("Minimum account balance:");
+        BankAccount minAccount = admin.getMinimum(openAccounts);
+        if (minAccount == null){
+            System.out.println("Error. No open accounts.");
+        } else {
+            System.out.println(minAccount.getName() + " - " + minAccount.getBalance());
+        }
+
+        System.out.println("Total account balance:");
+        double totalBalance = admin.getTotal(openAccounts);
+        System.out.println(totalBalance);
+        
+        System.out.println("Average account balance:");
+        double average = admin.getAverage(openAccounts);
+        System.out.println(average);
     }
 
     public void run() {

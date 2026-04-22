@@ -1,6 +1,6 @@
 package main;
 
-
+import java.util.ArrayList;
 
 public class BankAdmin {
 
@@ -49,5 +49,49 @@ public class BankAdmin {
         account.reopenAccount();
         return true;
     }
+
+    public BankAccount getMaximum(ArrayList<BankAccount> accounts){
+        double max = -1;
+        BankAccount maxAccount = null;
+        for (BankAccount account : accounts){
+            double balance = account.getBalance();
+            if (balance > max){
+                max = balance;
+                maxAccount = account;
+            }
+        }
+        return maxAccount;
+    }
+
+    public BankAccount getMinimum(ArrayList<BankAccount> accounts){
+        double min = Double.MAX_VALUE;
+        BankAccount minAccount = null;
+        for (BankAccount account : accounts){
+            double balance = account.getBalance();
+            if (balance < min){
+                min = balance;
+                minAccount = account;
+            }
+        }
+        return minAccount;
+    }
+
+    public double getTotal(ArrayList<BankAccount> accounts){
+        double total = 0;
+        for (BankAccount account : accounts){
+            double balance = account.getBalance();
+            total += balance;
+        }
+        return total;
+    }
+
+    public double getAverage(ArrayList<BankAccount> accounts){
+        double total = getTotal(accounts);
+        int numAccounts = accounts.size();
+        return total/numAccounts;
+    }
+
+
+    
 
 }
