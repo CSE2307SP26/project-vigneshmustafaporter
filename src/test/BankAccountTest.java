@@ -283,6 +283,69 @@ public class BankAccountTest {
     }
 
     @Test
+    public void testAddTransactionNote() {
+        BankAccount testAccount = new BankAccount("test", "test");
+        testAccount.deposit(100);
+        testAccount.withdraw(40);
+
+        testAccount.addTransactionNote(1, "groceries");
+
+        assertEquals("groceries", testAccount.getTransactionNote(1));
+    }
+
+    @Test
+    public void testAddTransactionNoteInvalidIndex() {
+        BankAccount testAccount = new BankAccount("test", "test");
+        testAccount.deposit(100);
+
+        try {
+            testAccount.addTransactionNote(5, "invalid");
+            fail();
+        } catch (IllegalArgumentException e) {
+        }
+    }
+
+    @Test
+    public void testSortedTransactionHistory() {
+        System.setIn(new java.io.ByteArrayInputStream(
+            "Main\npassword\n2\n3\n".getBytes()
+        ));
+
+        MainMenu testMenu = new MainMenu();
+        testMenu.getCurrentAccount().deposit(50);
+        testMenu.getCurrentAccount().deposit(200);
+        testMenu.getCurrentAccount().withdraw(100);
+
+        java.io.ByteArrayOutputStream output = new java.io.ByteArrayOutputStream();
+        java.io.PrintStream originalOut = System.out;
+        System.setOut(new java.io.PrintStream(output));
+
+        testMenu.viewTransactions();
+
+        System.setOut(originalOut);
+
+        String result = output.toString();
+        assertTrue(result.indexOf("200.0") < result.indexOf("100.0"));
+        assertTrue(result.indexOf("100.0") < result.indexOf("50.0"));
+    }
+
+    @Test
+    public void testSortedTransactionHistoryEmpty() {
+        System.setIn(new java.io.ByteArrayInputStream(
+            "Main\npassword\n".getBytes()
+        ));
+
+        MainMenu testMenu = new MainMenu();
+        java.io.ByteArrayOutputStream output = new java.io.ByteArrayOutputStream();
+        java.io.PrintStream originalOut = System.out;
+        System.setOut(new java.io.PrintStream(output));
+
+        testMenu.viewTransactions();
+        System.setOut(originalOut);
+        assertTrue(output.toString().contains("No transactions found."));
+    }
+
+    @Test
     public void testAccountNames() {
         BankAccount testAccount = new BankAccount("Test Name", "test");
         assertEquals(testAccount.getName(), "Test Name");
