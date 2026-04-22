@@ -63,7 +63,7 @@ Everything should be working fine.
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ## User stories Iteration 3
 1. A bank customer should be able to add a note to a transaction after checking transaction history. (Birch)
-2. A bank user should be able to connect his/her credit card to one bank account. (Birch)
+2. A bank customer should be able to view sorted transaction history by largest to smallest transaction after checking transction history. (Birch)
 3. Refactor FinancialProfile to get rid of Affordability Calculator and move everything to FinancialProfile(no static methods) (Vignesh)
 4. A bank admin should be able to generate a report of all the accounts that are associated with the bank (Vignesh)
 5. A bank admin should be able to freeze an bank account (Porter)
