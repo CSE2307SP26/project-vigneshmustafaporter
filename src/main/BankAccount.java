@@ -7,6 +7,7 @@ public class BankAccount {
     private double balance;
     private boolean closed;
     private ArrayList<Double> transactions;
+    private ArrayList<String> transactionNotes;
     private int ID;
     private static int accountIDs = 0;
     public String name;
@@ -17,6 +18,7 @@ public class BankAccount {
         this.password = password;
         this.balance = 0;
         this.transactions = new ArrayList<Double>();
+        this.transactionNotes = new ArrayList<String>();
         this.closed = false;
         this.ID = ++BankAccount.accountIDs;
     }
@@ -67,11 +69,32 @@ public class BankAccount {
 
     public void record(double amount) {
         transactions.add(amount);
+        transactionNotes.add("");
     }
 
     public ArrayList<Double> getTransactions() {
         return this.transactions;
     }
+
+    public ArrayList<String> getTransactionNotes() {
+        return this.transactionNotes;
+    }
+
+    public void addTransactionNote(int index, String note) {
+        validateTransactionIndex(index);
+        transactionNotes.set(index, note);
+    }
+
+    public String getTransactionNote(int index) {
+        validateTransactionIndex(index);
+        return transactionNotes.get(index);
+    }
+
+    private void validateTransactionIndex(int index) {
+        if (index < 0 || index >= transactionNotes.size()) {
+            throw new IllegalArgumentException("Invalid transaction index.");
+        }
+    }    
 
     public double getBalance() {
         if (this.closed) {

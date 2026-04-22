@@ -322,14 +322,144 @@ public class MainMenu {
     }
 
     public void viewTransactions() {
+        if (hasNoTransactions()) {
+            printNoTransactionsMessage();
+            return;
+        }
+
+        displayRegularTransactionHistory();
+        runTransactionHistoryMenu();
+    }
+
+    private boolean hasNoTransactions() {
+        return currentAccount.getTransactions().isEmpty();
+    }
+
+    private void printNoTransactionsMessage() {
         System.out.println("Transaction history:");
-        for(double value : currentAccount.getTransactions()) {
-            if(value >= 0) {
-                System.out.println("Deposit: " + value);
+        System.out.println("No transactions found.");
+    }
+
+    private void displayRegularTransactionHistory() {
+        System.out.println("Transaction history:");
+        for (int i = 0; i < currentAccount.getTransactions().size(); i++) {
+            printTransactionByIndex(i);
+        }
+    }
+
+    private void printTransactionByIndex(int index) {
+        double value = currentAccount.getTransactions().get(index);
+        String note = currentAccount.getTransactionNotes().get(index);
+
+        System.out.print((index + 1) + ". ");
+        printTransactionAmount(value);
+        printTransactionNote(note);
+        System.out.println();
+    }
+
+    private void printTransactionAmount(double value) {
+        if (value >= 0) {
+            System.out.print("Deposit: " + value);
+        } else {
+            System.out.print("Withdraw: " + (-value));
+        }
+    }
+
+    private void printTransactionNote(String note) {
+        if (note != null && !note.isBlank()) {
+            System.out.print(" | Note: " + note);
+        }
+    }
+
+    private void runTransactionHistoryMenu() {
+        while (true) {
+            displayTransactionHistoryOptions();
+            int selection = getUserSelection(3);
+
+            if (selection == 1) {
+                addNoteToTransaction();
+            } else if (selection == 2) {
+                displaySortedTransactionHistory();
             } else {
-                System.out.println("Withdraw: " + value * -1);
+                return;
             }
         }
+    }
+
+    private void displayTransactionHistoryOptions() {
+        System.out.println();
+        System.out.println("Transaction History Options:");
+        System.out.println("1. Add note to a transaction");
+        System.out.println("2. View sorted transaction history");
+        System.out.println("3. Return to main menu");
+    }
+
+    private void addNoteToTransaction() {
+        int index = promptForTransactionNumber();
+        String note = promptForTransactionNote();
+        currentAccount.addTransactionNote(index, note);
+        System.out.println("Note added successfully.");
+    }
+
+    private int promptForTransactionNumber() {
+        while (true) {
+            System.out.print("Enter the transaction number: ");
+            try {
+                int transactionNumber = keyboardInput.nextInt();
+                if (isValidTransactionNumber(transactionNumber)) {
+                    return transactionNumber - 1;
+                }
+                System.out.println("Invalid transaction number.");
+            } catch (InputMismatchException e) {
+                System.out.println("Please enter a valid number.");
+                keyboardInput.nextLine();
+            }
+        }
+    }
+
+    private boolean isValidTransactionNumber(int transactionNumber) {
+        return transactionNumber >= 1
+            && transactionNumber <= currentAccount.getTransactions().size();
+    }
+
+    private String promptForTransactionNote() {
+        keyboardInput.nextLine();
+        System.out.print("Enter your note: ");
+        return readString();
+    }
+
+    private void displaySortedTransactionHistory() {
+        System.out.println("Transaction history sorted from largest to smallest:");
+        ArrayList<Integer> sortedIndices = getSortedTransactionIndices();
+
+        for (int index : sortedIndices) {
+            printSortedTransactionByIndex(index);
+        }
+    }
+
+    private ArrayList<Integer> getSortedTransactionIndices() {
+        ArrayList<Integer> sortedIndices = new ArrayList<Integer>();
+
+        for (int i = 0; i < currentAccount.getTransactions().size(); i++) {
+            sortedIndices.add(i);
+        }
+
+        sortedIndices.sort((a, b) -> Double.compare(
+            Math.abs(currentAccount.getTransactions().get(b)),
+            Math.abs(currentAccount.getTransactions().get(a))
+        ));
+
+        return sortedIndices;
+    }
+
+    private void printSortedTransactionByIndex(int index) {
+        double value = currentAccount.getTransactions().get(index);
+        String note = currentAccount.getTransactionNotes().get(index);
+
+        System.out.print("Original #" + (index + 1) + " - ");
+        printTransactionAmount(value);
+        printTransactionNote(note);
+        System.out.println();
     }
     
     public void performCloseAccount() {
