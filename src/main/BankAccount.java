@@ -54,7 +54,7 @@ public class BankAccount {
         if (withdrawAmount < 0) {
             throw new IllegalArgumentException("Invalid withdraw amount.");
         }
-        if (this.balance - withdrawAmount < 0) {
+        if (getAvailableBalance() - withdrawAmount < 0) {
             throw new IllegalArgumentException();
         }
         transactions.add(new Transaction(withdrawAmount, Transaction.Type.WITHDRAWAL));
@@ -159,5 +159,21 @@ public class BankAccount {
         }
         this.directWithdraw(amount);
         otherAccount.directDeposit(amount);
+    }
+    
+    private double getAvailableBalance() {
+        double available = this.balance;
+
+        for (Transaction transaction : transactions) {
+            if (transaction.isPending()) {
+                if (transaction.getType() == Transaction.Type.DEPOSIT) {
+                    available += transaction.getAmount();
+                } else if (transaction.getType() == Transaction.Type.WITHDRAWAL) {
+                    available -= transaction.getAmount();
+                }
+            }
+        }
+
+        return available;
     }
 }

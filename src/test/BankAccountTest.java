@@ -1,7 +1,9 @@
 package test;
 
 import main.BankAccount;
+import main.BankTeller;
 import main.MainMenu;
+import main.Transaction;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -11,13 +13,25 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
 
 public class BankAccountTest {
+	
+	private void approveAll(BankAccount account, BankTeller teller) {
+	    for (Transaction transaction : account.getTransactions()) {
+	        if (transaction.isPending()) {
+	            teller.approveTransaction(account, transaction);
+	        }
+	    }
+	}
 
-    @Test
-    public void testDeposit() {
-        BankAccount testAccount = new BankAccount("test", "test");
-        testAccount.deposit(50);
-        assertEquals(50, testAccount.getBalance(), 0.01);
-    }
+	@Test
+	public void testDeposit() {
+	    BankAccount testAccount = new BankAccount("test", "test");
+	    BankTeller teller = new BankTeller("teller");
+
+	    testAccount.deposit(50);
+	    approveAll(testAccount, teller);
+
+	    assertEquals(50, testAccount.getBalance(), 0.01);
+	}
 
     @Test
     public void testInvalidDeposit() {
@@ -33,8 +47,13 @@ public class BankAccountTest {
     @Test
     public void testWithdraw() {
         BankAccount testAccount = new BankAccount("test", "test");
+        BankTeller teller = new BankTeller("teller");
+
         testAccount.deposit(80);
+        approveAll(testAccount, teller);
+
         testAccount.withdraw(30);
+        approveAll(testAccount, teller);
 
         assertEquals(50, testAccount.getBalance(), 0.01);
     }
@@ -42,13 +61,16 @@ public class BankAccountTest {
     @Test
     public void testWithdrawOverLimit() {
         BankAccount testAccount = new BankAccount("test", "test");
+        BankTeller teller = new BankTeller("teller");
+
         testAccount.deposit(50);
+        approveAll(testAccount, teller);
 
         try {
             testAccount.withdraw(100);
             fail();
         } catch (IllegalArgumentException e) {
-            // pass
+            // expected
         }
 
         assertEquals(50, testAccount.getBalance(), 0.01);
@@ -73,7 +95,10 @@ public class BankAccountTest {
         ));
 
         MainMenu testMenu = new MainMenu();
+        BankTeller teller = new BankTeller("teller");
+
         testMenu.getCurrentAccount().deposit(75);
+        approveAll(testMenu.getCurrentAccount(), teller);
 
         java.io.ByteArrayOutputStream output = new java.io.ByteArrayOutputStream();
         java.io.PrintStream originalOut = System.out;
@@ -117,9 +142,14 @@ public class BankAccountTest {
     public void testTransfer() {
         BankAccount fromAccount = new BankAccount("test", "test");
         BankAccount toAccount = new BankAccount("test", "test");
+        BankTeller teller = new BankTeller("teller");
 
         fromAccount.deposit(100);
+        approveAll(fromAccount, teller);
+
         fromAccount.transferTo(toAccount, 40);
+        approveAll(fromAccount, teller);
+        approveAll(toAccount, teller);
 
         assertEquals(60, fromAccount.getBalance(), 0.01);
         assertEquals(40, toAccount.getBalance(), 0.01);
@@ -128,7 +158,7 @@ public class BankAccountTest {
             fromAccount.transferTo(toAccount, 100);
             fail();
         } catch (IllegalArgumentException e) {
-            // nothing
+            // expected
         }
     }
 
@@ -136,14 +166,16 @@ public class BankAccountTest {
     public void testTransferOverLimit() {
         BankAccount fromAccount = new BankAccount("test", "test");
         BankAccount toAccount = new BankAccount("test", "test");
+        BankTeller teller = new BankTeller("teller");
 
         fromAccount.deposit(40);
+        approveAll(fromAccount, teller);
 
         try {
             fromAccount.transferTo(toAccount, 100);
             fail();
         } catch (IllegalArgumentException e) {
-            // pass
+            // expected
         }
 
         assertEquals(40, fromAccount.getBalance(), 0.01);
@@ -187,13 +219,18 @@ public class BankAccountTest {
         ));
 
         MainMenu testMenu = new MainMenu();
+        BankTeller teller = new BankTeller("teller");
+
         testMenu.getCurrentAccount().deposit(20);
         testMenu.getCurrentAccount().withdraw(10);
+        approveAll(testMenu.getCurrentAccount(), teller);
 
         testMenu.createAccount();
         testMenu.switchAccount(1);
+
         testMenu.getCurrentAccount().deposit(50);
         testMenu.getCurrentAccount().withdraw(30);
+        approveAll(testMenu.getCurrentAccount(), teller);
 
         double accountTwoBalance = testMenu.getCurrentAccount().getBalance();
 
@@ -282,12 +319,26 @@ public class BankAccountTest {
     @Test
     public void testTransactionHistory() {
         BankAccount testAccount = new BankAccount("test", "test");
+        BankTeller teller = new BankTeller("teller");
+
         testAccount.deposit(50);
         testAccount.withdraw(30);
-        ArrayList<Double> testTransactions = new ArrayList<Double>();
-        testTransactions.add(50.0);
-        testTransactions.add(-30.0);
-        assertEquals(testAccount.getTransactions(), testTransactions);
+        approveAll(testAccount, teller);
+
+        ArrayList<Double> actual = new ArrayList<>();
+        for (Transaction t : testAccount.getTransactions()) {
+            if (t.getType() == Transaction.Type.DEPOSIT) {
+                actual.add(t.getAmount());
+            } else {
+                actual.add(-t.getAmount());
+            }
+        }
+
+        ArrayList<Double> expected = new ArrayList<>();
+        expected.add(50.0);
+        expected.add(-30.0);
+
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -320,15 +371,21 @@ public class BankAccountTest {
         ));
 
         MainMenu testMenu = new MainMenu();
+        BankTeller teller = new BankTeller("teller");
+
         testMenu.getCurrentAccount().deposit(50);
         testMenu.getCurrentAccount().deposit(200);
         testMenu.getCurrentAccount().withdraw(100);
+        approveAll(testMenu.getCurrentAccount(), teller);
+
         java.io.ByteArrayOutputStream output = new java.io.ByteArrayOutputStream();
         java.io.PrintStream originalOut = System.out;
         System.setOut(new java.io.PrintStream(output));
 
         testMenu.viewTransactions();
+
         System.setOut(originalOut);
+
         String result = output.toString();
         String sortedPart = result.substring(
             result.indexOf("Transaction history sorted from largest to smallest:")
@@ -358,5 +415,34 @@ public class BankAccountTest {
     public void testAccountNames() {
         BankAccount testAccount = new BankAccount("Test Name", "test");
         assertEquals(testAccount.getName(), "Test Name");
+    }
+    
+    @Test
+    public void testCheckPassword() {
+        BankAccount account = new BankAccount("test", "secret");
+
+        assertTrue(account.checkPassword("secret"));
+        assertFalse(account.checkPassword("wrong"));
+    }
+    
+    @Test
+    public void testUpdatePassword() {
+        BankAccount account = new BankAccount("test", "old");
+
+        account.setPassword("new");
+
+        assertTrue(account.checkPassword("new"));
+        assertFalse(account.checkPassword("old"));
+    }
+    
+    @Test
+    public void testUpdatePasswordMultipleTimes() {
+        BankAccount account = new BankAccount("test", "a");
+
+        account.setPassword("b");
+        account.setPassword("c");
+
+        assertTrue(account.checkPassword("c"));
+        assertFalse(account.checkPassword("a"));
     }
 }

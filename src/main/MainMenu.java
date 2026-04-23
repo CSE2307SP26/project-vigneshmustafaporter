@@ -894,6 +894,10 @@ public class MainMenu {
             System.out.println("Could not approve transaction: " + e.getMessage());
         }
     }
+    
+    public ArrayList<ReportedAccount> getReportedAccounts() {
+        return reportedAccounts;
+    }
 
     public void run() {
         int selection = -1;
