@@ -8,8 +8,6 @@ import java.util.Scanner;
 
 public class FinancialProfileCollectorTest {
 
-   // this is bascially to make sure that the prompting is corect. 
-
     @Test
     public void testPromptForDoubleValidInput() {
         Scanner scanner = new Scanner("50000\n");
