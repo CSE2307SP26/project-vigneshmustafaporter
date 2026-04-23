@@ -68,6 +68,10 @@ public class BankAccountTest {
 
     @Test
     public void testCheckBalance() {
+        System.setIn(new java.io.ByteArrayInputStream(
+            "Main\npassword\n".getBytes()
+        ));
+
         MainMenu testMenu = new MainMenu();
         testMenu.getCurrentAccount().deposit(75);
 
@@ -164,7 +168,8 @@ public class BankAccountTest {
     @Test
     public void testAdditionalAccountBoolean() {
         System.setIn(new java.io.ByteArrayInputStream(
-                "\nTest Account\n".getBytes()));
+            "Main\npassword\nTest Account\npassword2\n".getBytes()
+        ));
 
         MainMenu testMenu = new MainMenu();
 
@@ -178,27 +183,32 @@ public class BankAccountTest {
     @Test
     public void testAdditionalAccountBalance() {
         System.setIn(new java.io.ByteArrayInputStream(
-                "\nSecond Account\n".getBytes()));
+            "Main\npassword\nSecond Account\npassword2\n".getBytes()
+        ));
 
         MainMenu testMenu = new MainMenu();
         testMenu.getCurrentAccount().deposit(20);
         testMenu.getCurrentAccount().withdraw(10);
+
         testMenu.createAccount();
         testMenu.switchAccount(1);
         testMenu.getCurrentAccount().deposit(50);
         testMenu.getCurrentAccount().withdraw(30);
 
         double accountTwoBalance = testMenu.getCurrentAccount().getBalance();
+
         testMenu.switchAccount(0);
         double accountOneBalance = testMenu.getCurrentAccount().getBalance();
+
         assertEquals(20, accountTwoBalance, 0.01);
         assertEquals(10, accountOneBalance, 0.01);
     }
 
     @Test
     public void testDuplicateAccountName() {
-        String simulatedInput = "Savings\nSavings2\n";
-        System.setIn(new java.io.ByteArrayInputStream(simulatedInput.getBytes()));
+        System.setIn(new java.io.ByteArrayInputStream(
+            "Savings\npassword\nSavings\nSavings2\npassword2\n".getBytes()
+        ));
 
         MainMenu testMenu = new MainMenu();
         testMenu.createAccount();
@@ -229,11 +239,9 @@ public class BankAccountTest {
 
     @Test
     public void testRenameDuplicateName() {
-        MainMenu probeMenu = new MainMenu();
-        String originalName = probeMenu.getCurrentAccount().getName();
-
         System.setIn(new java.io.ByteArrayInputStream(
-                ("\nSavings\n\n" + originalName + "\n").getBytes()));
+            "Main\npassword\nSavings\npassword2\n\nMain\n".getBytes()
+        ));
 
         MainMenu testMenu = new MainMenu();
         testMenu.createAccount();
@@ -315,18 +323,19 @@ public class BankAccountTest {
         testMenu.getCurrentAccount().deposit(50);
         testMenu.getCurrentAccount().deposit(200);
         testMenu.getCurrentAccount().withdraw(100);
-
         java.io.ByteArrayOutputStream output = new java.io.ByteArrayOutputStream();
         java.io.PrintStream originalOut = System.out;
         System.setOut(new java.io.PrintStream(output));
 
         testMenu.viewTransactions();
-
         System.setOut(originalOut);
-
         String result = output.toString();
-        assertTrue(result.indexOf("200.0") < result.indexOf("100.0"));
-        assertTrue(result.indexOf("100.0") < result.indexOf("50.0"));
+        String sortedPart = result.substring(
+            result.indexOf("Transaction history sorted from largest to smallest:")
+        );
+
+        assertTrue(sortedPart.indexOf("200.0") < sortedPart.indexOf("100.0"));
+        assertTrue(sortedPart.indexOf("100.0") < sortedPart.indexOf("50.0"));
     }
 
     @Test
