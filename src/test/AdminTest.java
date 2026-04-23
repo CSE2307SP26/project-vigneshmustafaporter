@@ -7,6 +7,9 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.beans.Transient;
+import java.util.ArrayList;
+
 public class AdminTest {
     
     @Test
@@ -178,5 +181,98 @@ public class AdminTest {
         testAdmin.unfreezeAccount(testAccount);
         assertEquals(testAccount.isClosed(), false);
     }
+
+    @Test
+    public void testMax(){
+        BankAdmin testAdmin = new BankAdmin("");
+        BankAccount testAccount1 = new BankAccount("1", "");
+        BankAccount testAccount2 = new BankAccount("2", "");
+        testAccount1.deposit(10);
+        testAccount2.deposit(20);
+        ArrayList<BankAccount> testAccounts = new ArrayList<BankAccount>();
+        testAccounts.add(testAccount1);
+        testAccounts.add(testAccount2);
+        BankAccount maxAccount = testAdmin.getMaximum(testAccounts);
+        assertEquals(maxAccount, testAccount2);
+    }
+
+    @Test
+    public void testEmptyMax(){
+        BankAdmin testAdmin = new BankAdmin("");
+        ArrayList<BankAccount> testAccounts = new ArrayList<BankAccount>();
+        BankAccount maxAccount = testAdmin.getMaximum(testAccounts);
+        assertEquals(maxAccount, null);
+    }
+
+    @Test
+    public void testMin(){
+        BankAdmin testAdmin = new BankAdmin("");
+        BankAccount testAccount1 = new BankAccount("1", "");
+        BankAccount testAccount2 = new BankAccount("2", "");
+        testAccount1.deposit(10);
+        testAccount2.deposit(20);
+        ArrayList<BankAccount> testAccounts = new ArrayList<BankAccount>();
+        testAccounts.add(testAccount1);
+        testAccounts.add(testAccount2);
+        BankAccount minAccount = testAdmin.getMinimum(testAccounts);
+        assertEquals(minAccount, testAccount1);
+    }
+
+    @Test
+    public void testEmptyMin(){
+        BankAdmin testAdmin = new BankAdmin("");
+        ArrayList<BankAccount> testAccounts = new ArrayList<BankAccount>();
+        BankAccount maxAccount = testAdmin.getMinimum(testAccounts);
+        assertEquals(maxAccount, null);
+    }
+
+    @Test
+    public void testTotal(){
+        BankAdmin testAdmin = new BankAdmin("");
+        BankAccount testAccount1 = new BankAccount("1", "");
+        BankAccount testAccount2 = new BankAccount("2", "");
+        testAccount1.deposit(10);
+        testAccount2.deposit(20);
+        ArrayList<BankAccount> testAccounts = new ArrayList<BankAccount>();
+        testAccounts.add(testAccount1);
+        testAccounts.add(testAccount2);
+        double total = testAdmin.getTotal(testAccounts);
+        assertEquals(total, 30);
+    }
+
+    @Test
+    public void testEmptyTotal(){
+        BankAdmin testAdmin = new BankAdmin("");
+        ArrayList<BankAccount> testAccounts = new ArrayList<BankAccount>();
+        double total = testAdmin.getTotal(testAccounts);
+        assertEquals(total, 0);
+    }
+
+    @Test
+    public void testAverage(){
+        BankAdmin testAdmin = new BankAdmin("");
+        BankAccount testAccount1 = new BankAccount("1", "");
+        BankAccount testAccount2 = new BankAccount("2", "");
+        testAccount1.deposit(10);
+        testAccount2.deposit(20);
+        ArrayList<BankAccount> testAccounts = new ArrayList<BankAccount>();
+        testAccounts.add(testAccount1);
+        testAccounts.add(testAccount2);
+        double average = testAdmin.getAverage(testAccounts);
+        assertEquals(average, 15);
+    }
+
+    @Test
+    public void testEmptyAverage(){
+        BankAdmin testAdmin = new BankAdmin("");
+        ArrayList<BankAccount> testAccounts = new ArrayList<BankAccount>();
+        double average = testAdmin.getAverage(testAccounts);
+        assertEquals(average, 0);
+    }
+
+
+
+
+
 
 }

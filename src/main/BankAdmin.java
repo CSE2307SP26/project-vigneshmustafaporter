@@ -88,6 +88,9 @@ public class BankAdmin {
     public double getAverage(ArrayList<BankAccount> accounts){
         double total = getTotal(accounts);
         int numAccounts = accounts.size();
+        if (numAccounts == 0){
+            return 0;
+        }
         return total/numAccounts;
     }
 
