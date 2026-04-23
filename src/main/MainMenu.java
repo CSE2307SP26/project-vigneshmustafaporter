@@ -6,8 +6,8 @@ import java.util.ArrayList;
 
 public class MainMenu {
 
-    private static final int EXIT_SELECTION = 15;
-    private static final int MAX_SELECTION = 15;
+    private static final int EXIT_SELECTION = 17;
+    private static final int MAX_SELECTION = 17;
     private static final int ADMIN_EXIT_SELECTION = 6;
     private static final int ADMIN_MAX_SELECTION = 6;
     private ArrayList<BankAccount> userAccounts;
@@ -43,7 +43,9 @@ public class MainMenu {
         System.out.println("12. Create a financial profile");
         System.out.println("13. Use the home affordability calculator");
         System.out.println("14. Update password");
-        System.out.println("15. Exit the app");
+        System.out.println("15. Use the Loan Calculator"); 
+        System.out.println("16. Use the Savings Goal Calculator");
+        System.out.println("17. Exit the app");
     }
 
     public int getUserSelection(int max) {
@@ -110,7 +112,7 @@ public class MainMenu {
                 if(finprofile == null) {
                     System.out.println("Please create a financial profile first (option 12). \n");
                 } else {
-                    int maxHomePrice = AffordabilityCalculator.calculateMaxHomePrice(finprofile);
+                    int maxHomePrice = finprofile.calculateMaxHomePrice(); 
                     System.out.println("Based on your financial profile, you can afford a home priced up to: $" + maxHomePrice);
                 }
                 break;
@@ -118,8 +120,17 @@ public class MainMenu {
                 updatePassword();
                 break;
             case 15:
+                System.out.println("Loan Calculator section \n");
+                LoanCalculator.runLoanCalculator(keyboardInput);  
+                break; 
+            case 16:
+                System.out.println("Savings Goal Calculator section \n");
+                SavingsGoalCalculator.runSavingsGoalCalculator(keyboardInput);
+                break; 
+            case 17:
                 System.out.println("Exiting the app. Goodbye!");
                 break;    
+
             default:
                 System.out.println("Unknown selection.");
         }
