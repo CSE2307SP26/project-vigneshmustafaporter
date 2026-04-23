@@ -37,7 +37,7 @@ Currently, some edge cases for closing an account exist. For example, a user can
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ## User stories Iteration 2
 1. A bank customer should be able to have password protected accounts. (Mustafa)
-2. A bank teller should be able to approve and/or deny customer transactions. (Mustafa)
+2. A bank teller should be able to approve and/or deny customer deposit/withdrawal transactions. (Mustafa)
 3. A bank account should have an account name to differentiate it. (Porter)
 4. A bank admin should be password protected with a password set on first use. (Porter)
 5. A bank user should be able to reopen his/her closed account. (Birch)
