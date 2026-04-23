@@ -8,11 +8,12 @@ public class MainMenu {
 
     private static final int EXIT_SELECTION = 18;
     private static final int MAX_SELECTION = 18;
-    private static final int ADMIN_EXIT_SELECTION = 6;
-    private static final int ADMIN_MAX_SELECTION = 6;
+    private static final int ADMIN_EXIT_SELECTION = 7;
+    private static final int ADMIN_MAX_SELECTION = 7;
     private static final int TELLER_EXIT_SELECTION = 2;
     private static final int TELLER_MAX_SELECTION = 2;
     private ArrayList<BankAccount> userAccounts;
+    private ArrayList<ReportedAccount> reportedAccounts;
     private BankAccount currentAccount;
     private Scanner keyboardInput;
     private BankAdmin admin;
@@ -23,6 +24,7 @@ public class MainMenu {
     public MainMenu() {
         this.keyboardInput = new Scanner(System.in);
         this.userAccounts = new ArrayList<BankAccount>();
+        this.reportedAccounts = new ArrayList<ReportedAccount>();
         System.out.println("Account Setup:");
         createAccount();
         this.currentAccount = userAccounts.get(0);
@@ -639,7 +641,8 @@ public class MainMenu {
         System.out.println("3. Freeze an account.");
         System.out.println("4. Unfreeze an account.");
         System.out.println("5. Show statistics.");
-        System.out.println("6. Exit admin mode.");
+        System.out.println("6. View reported accounts");
+        System.out.println("7. Exit admin mode.");
     }
 
     public void processAdminInput(int selection){
@@ -660,6 +663,9 @@ public class MainMenu {
                 adminShowStatistics();
                 break;
             case 6:
+                adminShowReported();
+                break;
+            case 7:
                 System.out.println("Exiting admin mode.");
                 break;
             default:
@@ -756,6 +762,12 @@ public class MainMenu {
         System.out.println("Average account balance:");
         double average = admin.getAverage(openAccounts);
         System.out.println(average);
+    }
+
+    private void adminShowReported() {
+        for(ReportedAccount account : reportedAccounts) {
+            System.out.println(account.formatReport());
+        }
     }
 
     public void tellerMenu() {
@@ -857,13 +869,20 @@ public class MainMenu {
     private void processTellerDecision(BankAccount account, Transaction transaction) {
         System.out.println("1. Approve");
         System.out.println("2. Deny");
-        int decision = getUserSelection(2);
+        System.out.println("3. Report");
+        int decision = getUserSelection(3);
 
         if (decision == 1) {
             approvePendingTransaction(account, transaction);
-        } else {
+        } else if (decision == 2) {
             teller.denyTransaction(transaction);
             System.out.println("Transaction denied.");
+        } else {
+            System.out.println("Reason for reporting: ");
+            keyboardInput.nextLine();
+            String reportReason = readString();
+            reportedAccounts.add(new ReportedAccount(account, reportReason));
+            System.out.println("Account reported to admin.");
         }
     }
 
