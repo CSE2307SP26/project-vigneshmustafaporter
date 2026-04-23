@@ -6,17 +6,20 @@ import java.util.ArrayList;
 
 public class MainMenu {
 
-    private static final int EXIT_SELECTION = 15;
-    private static final int MAX_SELECTION = 15;
-    private static final int ADMIN_EXIT_SELECTION = 6;
-    private static final int ADMIN_MAX_SELECTION = 6;
+    private static final int EXIT_SELECTION = 16;
+    private static final int MAX_SELECTION = 16;
+    private static final int ADMIN_EXIT_SELECTION = 5;
+    private static final int ADMIN_MAX_SELECTION = 5;
+    private static final int TELLER_EXIT_SELECTION = 2;
+    private static final int TELLER_MAX_SELECTION = 2;
     private ArrayList<BankAccount> userAccounts;
     private BankAccount currentAccount;
     private Scanner keyboardInput;
     private BankAdmin admin;
+    private BankTeller teller;
     private FinancialProfileCollector profileCollector;
     private FinancialProfile finprofile;
-   
+
     public MainMenu() {
         this.keyboardInput = new Scanner(System.in);
         this.userAccounts = new ArrayList<BankAccount>();
@@ -24,16 +27,17 @@ public class MainMenu {
         createAccount();
         this.currentAccount = userAccounts.get(0);
         this.admin = null;
+        this.teller = null;
         this.profileCollector = new FinancialProfileCollector(keyboardInput);
     }
 
     public void displayOptions() {
         System.out.println("Welcome to the 237 Bank App! You are currently using account " + this.currentAccount.getID() + ": " + this.currentAccount.getName());
         System.out.println("1. Make a deposit");
-        System.out.println("2. Make a withdraw"); 
-        System.out.println("3. Check your balance"); 
-        System.out.println("4. Check transaction history"); 
-        System.out.println("5. Create additional account"); 
+        System.out.println("2. Make a withdraw");
+        System.out.println("3. Check your balance");
+        System.out.println("4. Check transaction history");
+        System.out.println("5. Create additional account");
         System.out.println("6. Switch account");
         System.out.println("7. Rename current account");
         System.out.println("8. Close your account");
@@ -43,7 +47,8 @@ public class MainMenu {
         System.out.println("12. Create a financial profile");
         System.out.println("13. Use the home affordability calculator");
         System.out.println("14. Update password");
-        System.out.println("15. Exit the app");
+        System.out.println("15. Enter bank teller mode");
+        System.out.println("16. Exit the app");
     }
 
     public int getUserSelection(int max) {
@@ -54,13 +59,13 @@ public class MainMenu {
                 selection = keyboardInput.nextInt();
             } catch (InputMismatchException e) {
                 System.out.println("Invalid input. Enter a number between 1 and " + max + ".");
-                keyboardInput.nextLine(); 
+                keyboardInput.nextLine();
             }
         }
         return selection;
     }
 
-    public void processInput(int selection) {    
+    public void processInput(int selection) {
         switch (selection) {
             case 1:
                 performDeposit();
@@ -102,11 +107,11 @@ public class MainMenu {
                 adminMenu();
                 break;
             case 12:
-                System.out.println("The finanical profile"); 
+                System.out.println("The finanical profile");
                 this.finprofile = profileCollector.collectFromUser();
-                break; 
+                break;
             case 13:
-                System.out.println("Home affordadiblity calculator section \n"); 
+                System.out.println("Home affordadiblity calculator section \n");
                 if(finprofile == null) {
                     System.out.println("Please create a financial profile first (option 12). \n");
                 } else {
@@ -118,12 +123,14 @@ public class MainMenu {
                 updatePassword();
                 break;
             case 15:
+                tellerMenu();
+                break;
+            case 16:
                 System.out.println("Exiting the app. Goodbye!");
-                break;    
+                break;
             default:
                 System.out.println("Unknown selection.");
         }
-        // we want to break after user selects an option 
     }
 
     public BankAccount selectAccount() {
@@ -201,12 +208,6 @@ public class MainMenu {
     }
 
     public void switchAccount() {
-        while(getOpenAccounts().size() < 1){
-            System.out.println("You have no open accounts. Please create a new account.");
-            createAccount();
-            switchAccount(userAccounts.size()-1); //automatically switch to new account
-            return;
-        }
         BankAccount selectedAccount = selectAccount();
         System.out.print("Input Password: ");
         keyboardInput.nextLine();
@@ -224,7 +225,7 @@ public class MainMenu {
         System.out.println("Please input current password: ");
         keyboardInput.nextLine();
         String supposedPassword = readString();
-        
+
         if(currentAccount.checkPassword(supposedPassword)) {
             System.out.println("Please input new password: ");
             String newPassword = readString();
@@ -276,11 +277,9 @@ public class MainMenu {
     }
 
     public void performDeposit() {
-        double depositAmount = promptForNonNegativeAmount(
-            "How much would you like to deposit: "
-        );
+        double depositAmount = promptForNonNegativeAmount("How much would you like to deposit: ");
         currentAccount.deposit(depositAmount);
-        System.out.println("Deposit successful!");
+        System.out.println("Deposit submitted! Awaiting teller approval.");
     }
 
     private double promptForNonNegativeAmount(String prompt) {
@@ -301,13 +300,13 @@ public class MainMenu {
     }
 
     public void checkBalance() {
-        System.out.println("Current Balance is: " + currentAccount.getBalance()); 
+        System.out.println("Current Balance is: " + currentAccount.getBalance());
     }
 
     public void performWithDraw() {
         double withdrawAmount = promptForValidWithdrawAmount();
         currentAccount.withdraw(withdrawAmount);
-        System.out.println("Withdrawal successful!");
+        System.out.println("Withdrawal submitted! Awaiting teller approval.");
     }
 
     private double promptForValidWithdrawAmount() {
@@ -354,20 +353,32 @@ public class MainMenu {
     }
 
     private void printTransactionByIndex(int index) {
-        double value = currentAccount.getTransactions().get(index);
-        String note = currentAccount.getTransactionNotes().get(index);
+        Transaction transaction = currentAccount.getTransactions().get(index);
 
         System.out.print((index + 1) + ". ");
-        printTransactionAmount(value);
-        printTransactionNote(note);
+        printTransactionDetails(transaction);
         System.out.println();
     }
 
-    private void printTransactionAmount(double value) {
-        if (value >= 0) {
-            System.out.print("Deposit: " + value);
-        } else {
-            System.out.print("Withdraw: " + (-value));
+    private void printTransactionDetails(Transaction transaction) {
+        String typeStr = transactionTypeToString(transaction.getType());
+        String statusStr = "[" + transaction.getStatus().name() + "]";
+        System.out.print(statusStr + " " + typeStr + ": " + transaction.getAmount());
+        printTransactionNote(transaction.getNote());
+    }
+
+    private String transactionTypeToString(Transaction.Type type) {
+        switch(type) {
+            case DEPOSIT:
+                return "Deposit";
+            case WITHDRAWAL:
+                return "Withdrawal";
+            case TRANSFER_IN:
+                return "Transfer In";
+            case TRANSFER_OUT:
+                return "Transfer Out";
+            default:
+                return "Unknown";
         }
     }
 
@@ -451,23 +462,21 @@ public class MainMenu {
         }
 
         sortedIndices.sort((a, b) -> Double.compare(
-            Math.abs(currentAccount.getTransactions().get(b)),
-            Math.abs(currentAccount.getTransactions().get(a))
+            Math.abs(currentAccount.getTransactions().get(b).getAmount()),
+            Math.abs(currentAccount.getTransactions().get(a).getAmount())
         ));
 
         return sortedIndices;
     }
 
     private void printSortedTransactionByIndex(int index) {
-        double value = currentAccount.getTransactions().get(index);
-        String note = currentAccount.getTransactionNotes().get(index);
+        Transaction transaction = currentAccount.getTransactions().get(index);
 
         System.out.print("Original #" + (index + 1) + " - ");
-        printTransactionAmount(value);
-        printTransactionNote(note);
+        printTransactionDetails(transaction);
         System.out.println();
     }
-    
+
     public void performCloseAccount() {
 
         if (currentAccount.isClosed()) {
@@ -575,7 +584,7 @@ public class MainMenu {
     public void adminMenu(){
         int adminSelection = -1;
         if (!checkPassword()){
-            adminSelection = ADMIN_EXIT_SELECTION; // set the selection to automatically exit the admin menu
+            adminSelection = ADMIN_EXIT_SELECTION;
             System.out.println("Incorrect password, exiting admin mode.");
         }
         while(adminSelection != ADMIN_EXIT_SELECTION){
@@ -604,7 +613,7 @@ public class MainMenu {
 
     public String readPassword(){
         try {
-            keyboardInput.nextLine(); //clear the line
+            keyboardInput.nextLine();
             return keyboardInput.nextLine();
         } catch (Exception e) {
             System.out.println("Please try again with a proper string.");
@@ -615,11 +624,10 @@ public class MainMenu {
     public void displayAdminOptions(){
         System.out.println("Welcome to admin mode. Please select one of the administrative options below.");
         System.out.println("1. Collect fees");
-        System.out.println("2. Make an interest payment."); 
+        System.out.println("2. Make an interest payment.");
         System.out.println("3. Freeze an account.");
         System.out.println("4. Unfreeze an account.");
-        System.out.println("5. Show statistics.");
-        System.out.println("6. Exit admin mode.");
+        System.out.println("5. Exit admin mode.");
     }
 
     public void processAdminInput(int selection){
@@ -637,9 +645,6 @@ public class MainMenu {
                 adminUnfreezeAccount();
                 break;
             case 5:
-                adminShowStatistics();
-                break;
-            case 6:
                 System.out.println("Exiting admin mode.");
                 break;
             default:
@@ -707,35 +712,124 @@ public class MainMenu {
         } else {
             System.out.println("Please unfreeze an account that is frozen or closed.");
         }
-
     }
 
-    private void adminShowStatistics() {
-        ArrayList<BankAccount> openAccounts = getOpenAccounts();
-        
-        System.out.println("Maximum account balance:");
-        BankAccount maxAccount = admin.getMaximum(openAccounts);
-        if (maxAccount == null){
-            System.out.println("Error. No open accounts.");
-        } else {
-            System.out.println(maxAccount.getName() + " - " + maxAccount.getBalance());
+    public void tellerMenu() {
+        if (!checkTellerPassword()) {
+            System.out.println("Incorrect password, exiting teller mode.");
+            return;
         }
-        
-        System.out.println("Minimum account balance:");
-        BankAccount minAccount = admin.getMinimum(openAccounts);
-        if (minAccount == null){
-            System.out.println("Error. No open accounts.");
+        int selection = -1;
+        while (selection != TELLER_EXIT_SELECTION) {
+            displayTellerOptions();
+            selection = getUserSelection(TELLER_MAX_SELECTION);
+            processTellerInput(selection);
+        }
+    }
+
+    private boolean checkTellerPassword() {
+        if (this.teller == null) {
+            System.out.println("Please set a password for bank teller access.");
+            String password = readPassword();
+            if (password.isEmpty()) {
+                return false;
+            }
+            this.teller = new BankTeller(password);
+            return true;
         } else {
-            System.out.println(minAccount.getName() + " - " + minAccount.getBalance());
+            System.out.print("Teller password: ");
+            String password = readPassword();
+            return teller.checkPassword(password);
+        }
+    }
+
+    private void displayTellerOptions() {
+        System.out.println("Welcome to bank teller mode.");
+        System.out.println("1. Review pending transactions");
+        System.out.println("2. Exit teller mode");
+    }
+
+    private void processTellerInput(int selection) {
+        switch (selection) {
+            case 1:
+                tellerReviewPending();
+                break;
+            case 2:
+                System.out.println("Exiting teller mode.");
+                break;
+            default:
+                System.out.println("Unknown selection.");
+        }
+    }
+
+    private void tellerReviewPending() {
+        ArrayList<BankAccount> pendingAccounts = new ArrayList<>();
+        ArrayList<Transaction> pendingTransactions = new ArrayList<>();
+        collectPendingTransactions(pendingAccounts, pendingTransactions);
+
+        if (pendingTransactions.isEmpty()) {
+            System.out.println("No pending transactions.");
+            return;
         }
 
-        System.out.println("Total account balance:");
-        double totalBalance = admin.getTotal(openAccounts);
-        System.out.println(totalBalance);
-        
-        System.out.println("Average account balance:");
-        double average = admin.getAverage(openAccounts);
-        System.out.println(average);
+        displayPendingTransactions(pendingAccounts, pendingTransactions);
+
+        int sel = promptForPendingTransactionSelection(pendingTransactions.size());
+        Transaction selected = pendingTransactions.get(sel - 1);
+        BankAccount selectedAccount = pendingAccounts.get(sel - 1);
+
+        processTellerDecision(selectedAccount, selected);
+    }
+
+    private void collectPendingTransactions(ArrayList<BankAccount> pendingAccounts, ArrayList<Transaction> pendingTransactions) {
+        for (BankAccount account : userAccounts) {
+            for (Transaction transaction : account.getTransactions()) {
+                if (transaction.isPending()) {
+                    pendingAccounts.add(account);
+                    pendingTransactions.add(transaction);
+                }
+            }
+        }
+    }
+
+    private void displayPendingTransactions(ArrayList<BankAccount> pendingAccounts, ArrayList<Transaction> pendingTransactions) {
+        System.out.println("Pending Transactions:");
+        for (int i = 0; i < pendingTransactions.size(); i++) {
+            printPendingTransactionEntry(i + 1, pendingAccounts.get(i), pendingTransactions.get(i));
+        }
+    }
+
+    private void printPendingTransactionEntry(int number, BankAccount account, Transaction transaction) {
+        String typeStr = transaction.getType() == Transaction.Type.DEPOSIT ? "Deposit" : "Withdrawal";
+        String noteStr = transaction.getNote().isBlank() ? "" : " | Note: " + transaction.getNote();
+        System.out.println(number + ". [" + account.getName() + " (ID: " + account.getID() + ")] " + typeStr + ": $" + transaction.getAmount() + noteStr);
+    }
+
+    private int promptForPendingTransactionSelection(int count) {
+        System.out.println("Select a transaction to review: ");
+        return getUserSelection(count);
+    }
+
+    private void processTellerDecision(BankAccount account, Transaction transaction) {
+        System.out.println("1. Approve");
+        System.out.println("2. Deny");
+        int decision = getUserSelection(2);
+
+        if (decision == 1) {
+            approvePendingTransaction(account, transaction);
+        } else {
+            teller.denyTransaction(transaction);
+            System.out.println("Transaction denied.");
+        }
+    }
+
+    private void approvePendingTransaction(BankAccount account, Transaction transaction) {
+        try {
+            teller.approveTransaction(account, transaction);
+            System.out.println("Transaction approved.");
+        } catch (IllegalStateException e) {
+            System.out.println("Could not approve transaction: " + e.getMessage());
+        }
     }
 
     public void run() {
