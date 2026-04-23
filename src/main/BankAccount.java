@@ -6,27 +6,28 @@ public class BankAccount {
 
     private double balance;
     private boolean closed;
-    private ArrayList<Double> transactions;
+    private ArrayList<Transaction> transactions;
     private int ID;
     private static int accountIDs = 0;
     public String name;
+    private String password;
 
-    public BankAccount() {
-        this.name = "Main";
-        this.balance = 0;
-        this.transactions = new ArrayList<Double>();
-        this.closed = false;
-        this.ID = ++BankAccount.accountIDs;
-    }
-
-    public BankAccount(String name) {
+    public BankAccount(String name, String password) {
         this.name = name;
+        this.password = password;
         this.balance = 0;
-        this.transactions = new ArrayList<Double>();
+        this.transactions = new ArrayList<Transaction>();
         this.closed = false;
         this.ID = ++BankAccount.accountIDs;
     }
-    
+
+    public boolean checkPassword(String input) {
+        return this.password.equals(input);
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public int getID() {
         return this.ID;
@@ -40,12 +41,10 @@ public class BankAccount {
         if (isClosed()) {
             throw new IllegalStateException("Account is closed.");
         }
-        if(amount > 0 && !this.closed) {
-            this.balance += amount;
-            record(amount);
-        } else {
+        if (amount <= 0) {
             throw new IllegalArgumentException();
         }
+        transactions.add(new Transaction(amount, Transaction.Type.DEPOSIT));
     }
 
     public void withdraw(double withdrawAmount) {
@@ -55,21 +54,71 @@ public class BankAccount {
         if (withdrawAmount < 0) {
             throw new IllegalArgumentException("Invalid withdraw amount.");
         }
-        if(this.balance - withdrawAmount < 0 || this.closed) {
-            throw new IllegalArgumentException(); 
+        if (getAvailableBalance() - withdrawAmount < 0) {
+            throw new IllegalArgumentException();
         }
-        this.balance = this.balance - withdrawAmount; 
-        record(-1 * withdrawAmount);
-        // subtract the withdraw amount from the actual account. 
-        
+        transactions.add(new Transaction(withdrawAmount, Transaction.Type.WITHDRAWAL));
     }
 
-    public void record(double amount) {
-        transactions.add(amount);
+    public void directDeposit(double amount) {
+        if (isClosed()) {
+            throw new IllegalStateException("Account is closed.");
+        }
+        if (amount <= 0) {
+            throw new IllegalArgumentException();
+        }
+        Transaction transaction = new Transaction(amount, Transaction.Type.TRANSFER_IN);
+        this.balance += amount;
+        transaction.transfer();
+        transactions.add(transaction);
     }
 
-    public ArrayList<Double> getTransactions() {
+    public void directWithdraw(double amount) {
+        if (isClosed()) {
+            throw new IllegalStateException("Account is closed.");
+        }
+        if (amount < 0) {
+            throw new IllegalArgumentException("Invalid withdraw amount.");
+        }
+        if (this.balance - amount < 0) {
+            throw new IllegalArgumentException();
+        }
+        Transaction transaction = new Transaction(amount, Transaction.Type.TRANSFER_OUT);
+        this.balance -= amount;
+        transaction.transfer();
+        transactions.add(transaction);
+    }
+
+    void applyApprovedTransaction(Transaction transaction) {
+        if (transaction.getType() == Transaction.Type.DEPOSIT) {
+            this.balance += transaction.getAmount();
+        } else {
+            if (this.balance < transaction.getAmount()) {
+                throw new IllegalStateException("Insufficient funds to approve withdrawal.");
+            }
+            this.balance -= transaction.getAmount();
+        }
+        transaction.approve();
+    }
+
+    public ArrayList<Transaction> getTransactions() {
         return this.transactions;
+    }
+
+    public void addTransactionNote(int index, String note) {
+        validateTransactionIndex(index);
+        transactions.get(index).setNote(note);
+    }
+
+    public String getTransactionNote(int index) {
+        validateTransactionIndex(index);
+        return transactions.get(index).getNote();
+    }
+
+    private void validateTransactionIndex(int index) {
+        if (index < 0 || index >= transactions.size()) {
+            throw new IllegalArgumentException("Invalid transaction index.");
+        }
     }
 
     public double getBalance() {
@@ -108,11 +157,23 @@ public class BankAccount {
         if (otherAccount == null || otherAccount.isClosed() || this.closed || amount <= 0) {
             throw new IllegalArgumentException();
         }
-        this.withdraw(amount);
-        otherAccount.deposit(amount);
+        this.directWithdraw(amount);
+        otherAccount.directDeposit(amount);
+    }
+    
+    private double getAvailableBalance() {
+        double available = this.balance;
+
+        for (Transaction transaction : transactions) {
+            if (transaction.isPending()) {
+                if (transaction.getType() == Transaction.Type.DEPOSIT) {
+                    available += transaction.getAmount();
+                } else if (transaction.getType() == Transaction.Type.WITHDRAWAL) {
+                    available -= transaction.getAmount();
+                }
+            }
+        }
+
+        return available;
     }
 }
-
-
-
-

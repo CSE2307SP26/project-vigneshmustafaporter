@@ -70,3 +70,14 @@ Everything should be working fine.
 6. A bank admin should be able to view a list of stats for the accounts in the app (Porter)
 7. A bank teller should be able to report a user's account for suspicious activity to the bank admin. (Mustafa)
 8. A bank user should be able to change their password. (Mustafa)
+
+## What user stories were completed this iteration?
+
+User stories 1-8 from iteration 3 were implemented, and user stories 1-2 from iteration 2 were implemented.
+
+## Is there anything that you implemented but doesn't currently work?
+
+Everything should (hopefully) be working fine. However, we are unsure if this is an error with our VS Code IDE or some file in the repository, but we cannot run any of our tests in VS Code. Other IDEs like Eclipse run the tests fine. This may be an issue for anyone trying to run our tests.
+
+## What commands are needed to compile and run your code from the command line?
+./runApp.sh
