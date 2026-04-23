@@ -64,8 +64,8 @@ Everything should be working fine.
 ## User stories Iteration 3
 1. A bank customer should be able to add a note to a transaction after checking transaction history. (Birch)
 2. A bank customer should be able to view sorted transaction history by largest to smallest transaction after checking transction history. (Birch)
-3. Refactor FinancialProfile to get rid of Affordability Calculator and move everything to FinancialProfile(no static methods) (Vignesh)
-4. A bank admin should be able to generate a report of all the accounts that are associated with the bank (Vignesh)
+3. A bank customer should be able to see the trajectory of their savings through a Savings Goal Calculator (Vignesh)
+4. A bank customer should be able to see their eligbility for certain loan amounts through the Loan Calculator (Vignesh)
 5. A bank admin should be able to freeze an bank account (Porter)
 6. A bank admin should be able to view a list of stats for the accounts in the app (Porter)
 7. A bank teller should be able to report a user's account for suspicious activity to the bank admin. (Mustafa)
