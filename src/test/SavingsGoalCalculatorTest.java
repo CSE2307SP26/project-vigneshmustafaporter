@@ -26,7 +26,7 @@ public class SavingsGoalCalculatorTest {
    @Test
    public void testCalculateFutureValueTypical() {
        double futureValue = SavingsGoalCalculator.calculateFutureValue(1000, 100, 5, 12);
-       assertEquals(2315.11, futureValue, 0.05);
+       assertEquals(2284.16, futureValue, 0.05);
    }
 
 
@@ -39,6 +39,7 @@ public class SavingsGoalCalculatorTest {
 
    @Test
    public void testCalculateMonthsToGoalInvalidParameters() {
+    // not sure if we went over this in class but assertThrows is nice way to test for exceptions. I enjoy it it java programming
        assertThrows(IllegalArgumentException.class, () -> {
            SavingsGoalCalculator.calculateMonthsToGoal(-100, 100, 5, 5000);
        });

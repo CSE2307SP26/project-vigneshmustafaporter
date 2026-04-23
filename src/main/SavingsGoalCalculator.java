@@ -17,7 +17,7 @@ public class SavingsGoalCalculator {
            balance += monthlyContribution;
            balance *= (1 + monthlyRate);
            months++;
-           if (months > 1200) { // Prevent infinite loop (100 years)
+           if (months > 1200) { // it is typically determined 100 years is enough
                throw new IllegalArgumentException("Goal unreachable within reasonable time");
            }
        }

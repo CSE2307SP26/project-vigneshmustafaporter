@@ -18,14 +18,14 @@ public class LoanCalculatorTest {
    @Test
    public void testCalculateTotalPayment() {
        double totalPayment = LoanCalculator.calculateTotalPayment(10000, 5, 10);
-       assertEquals(12728.49, totalPayment, 0.01);
+       assertEquals(12727.86, totalPayment, 0.01);
    }
 
 
    @Test
    public void testCalculateTotalInterest() {
        double totalInterest = LoanCalculator.calculateTotalInterest(10000, 5, 10);
-       assertEquals(2728.49, totalInterest, 0.01);
+       assertEquals(2727.86, totalInterest, 0.01);
    }
 
 

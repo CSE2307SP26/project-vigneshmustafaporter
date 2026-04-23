@@ -6,37 +6,42 @@ import java.util.Scanner;
 
 
 public class LoanCalculator {
-   public static double calculateMonthlyPayment(double principal, double annualInterestRate, int termInYears) {
-       if (principal <= 0 || annualInterestRate < 0 || termInYears <= 0) {
-           throw new IllegalArgumentException("Invalid loan parameters");
-       }
-       double monthlyRate = annualInterestRate / 100 / 12;
-       int totalMonths = termInYears * 12;
-       return principal * (monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) / (Math.pow(1 + monthlyRate, totalMonths) - 1);
-   }
+   public static double calculateMonthlyPayment(double principal, double annualInterestRate, int termInYears) {                                                                                                        
+      if (principal <= 0 || annualInterestRate < 0 || termInYears <= 0) {
+          throw new IllegalArgumentException("Invalid loan parameters"); 
+          // this fixes the NaN number that I was getting.                                                                                                                                             
+      }
+      int totalMonths = termInYears * 12;                                                                                                                                                                             
+      if (annualInterestRate == 0) {                                                                                                                                                                                  
+          return principal / totalMonths;
+      }                                                                                                                                                                                                               
+      double monthlyRate = annualInterestRate / 100 / 12;
+      return principal * (monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) / (Math.pow(1 + monthlyRate, totalMonths) - 1);
+  }                                                                                      
 
-
-    // New method: Calculate total amount paid over the loan term
+    // calculate total payment over the loan term(PRIN + INTER)
    public static double calculateTotalPayment(double principal, double annualInterestRate, int termInYears) {
        double monthlyPayment = calculateMonthlyPayment(principal, annualInterestRate, termInYears);
        return monthlyPayment * termInYears * 12;
    }
 
 
-   // New method: Calculate total interest paid over the loan term
+   // interest paid over the entire loan term. 
    public static double calculateTotalInterest(double principal, double annualInterestRate, int termInYears) {
        double totalPayment = calculateTotalPayment(principal, annualInterestRate, termInYears);
        return totalPayment - principal;
    }
 
 
-   // New method: Validate loan parameters (returns true if valid)
+   
    public static boolean validateLoanParameters(double principal, double annualInterestRate, int termInYears) {
        return principal > 0 && annualInterestRate >= 0 && termInYears > 0;
+       // just validating the loan numbers- can't be negative
    }
 
 
    public static void runLoanCalculator(Scanner scanner) {
+    // just wrapping the scanner input in a try catch
        try {
            System.out.print("Enter principal amount: ");
            double principal = scanner.nextDouble();
