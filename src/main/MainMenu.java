@@ -6,10 +6,10 @@ import java.util.ArrayList;
 
 public class MainMenu {
 
-    private static final int EXIT_SELECTION = 16;
-    private static final int MAX_SELECTION = 16;
-    private static final int ADMIN_EXIT_SELECTION = 5;
-    private static final int ADMIN_MAX_SELECTION = 5;
+    private static final int EXIT_SELECTION = 18;
+    private static final int MAX_SELECTION = 18;
+    private static final int ADMIN_EXIT_SELECTION = 6;
+    private static final int ADMIN_MAX_SELECTION = 6;
     private static final int TELLER_EXIT_SELECTION = 2;
     private static final int TELLER_MAX_SELECTION = 2;
     private ArrayList<BankAccount> userAccounts;
@@ -47,8 +47,10 @@ public class MainMenu {
         System.out.println("12. Create a financial profile");
         System.out.println("13. Use the home affordability calculator");
         System.out.println("14. Update password");
-        System.out.println("15. Enter bank teller mode");
-        System.out.println("16. Exit the app");
+        System.out.println("15. Use the Loan Calculator"); 
+        System.out.println("16. Use the Savings Goal Calculator");
+        System.out.println("17. Enter bank teller mode");
+        System.out.println("18. Exit the app");
     }
 
     public int getUserSelection(int max) {
@@ -115,7 +117,7 @@ public class MainMenu {
                 if(finprofile == null) {
                     System.out.println("Please create a financial profile first (option 12). \n");
                 } else {
-                    int maxHomePrice = AffordabilityCalculator.calculateMaxHomePrice(finprofile);
+                    int maxHomePrice = finprofile.calculateMaxHomePrice(); 
                     System.out.println("Based on your financial profile, you can afford a home priced up to: $" + maxHomePrice);
                 }
                 break;
@@ -123,11 +125,20 @@ public class MainMenu {
                 updatePassword();
                 break;
             case 15:
+                System.out.println("Loan Calculator section \n");
+                LoanCalculator.runLoanCalculator(keyboardInput);  
+                break; 
+            case 16:
+                System.out.println("Savings Goal Calculator section \n");
+                SavingsGoalCalculator.runSavingsGoalCalculator(keyboardInput);
+                break;
+            case 17:
                 tellerMenu();
                 break;
-            case 16:
+            case 18:
                 System.out.println("Exiting the app. Goodbye!");
-                break;
+                break;    
+
             default:
                 System.out.println("Unknown selection.");
         }
@@ -584,7 +595,7 @@ public class MainMenu {
     public void adminMenu(){
         int adminSelection = -1;
         if (!checkPassword()){
-            adminSelection = ADMIN_EXIT_SELECTION;
+            adminSelection = ADMIN_EXIT_SELECTION; // set the selection to automatically exit the admin menu
             System.out.println("Incorrect password, exiting admin mode.");
         }
         while(adminSelection != ADMIN_EXIT_SELECTION){
@@ -613,7 +624,7 @@ public class MainMenu {
 
     public String readPassword(){
         try {
-            keyboardInput.nextLine();
+            keyboardInput.nextLine(); //clear the line
             return keyboardInput.nextLine();
         } catch (Exception e) {
             System.out.println("Please try again with a proper string.");
@@ -624,10 +635,11 @@ public class MainMenu {
     public void displayAdminOptions(){
         System.out.println("Welcome to admin mode. Please select one of the administrative options below.");
         System.out.println("1. Collect fees");
-        System.out.println("2. Make an interest payment.");
+        System.out.println("2. Make an interest payment."); 
         System.out.println("3. Freeze an account.");
         System.out.println("4. Unfreeze an account.");
-        System.out.println("5. Exit admin mode.");
+        System.out.println("5. Show statistics.");
+        System.out.println("6. Exit admin mode.");
     }
 
     public void processAdminInput(int selection){
@@ -645,6 +657,9 @@ public class MainMenu {
                 adminUnfreezeAccount();
                 break;
             case 5:
+                adminShowStatistics();
+                break;
+            case 6:
                 System.out.println("Exiting admin mode.");
                 break;
             default:
@@ -712,6 +727,35 @@ public class MainMenu {
         } else {
             System.out.println("Please unfreeze an account that is frozen or closed.");
         }
+
+    }
+
+    private void adminShowStatistics() {
+        ArrayList<BankAccount> openAccounts = getOpenAccounts();
+        
+        System.out.println("Maximum account balance:");
+        BankAccount maxAccount = admin.getMaximum(openAccounts);
+        if (maxAccount == null){
+            System.out.println("Error. No open accounts.");
+        } else {
+            System.out.println(maxAccount.getName() + " - " + maxAccount.getBalance());
+        }
+        
+        System.out.println("Minimum account balance:");
+        BankAccount minAccount = admin.getMinimum(openAccounts);
+        if (minAccount == null){
+            System.out.println("Error. No open accounts.");
+        } else {
+            System.out.println(minAccount.getName() + " - " + minAccount.getBalance());
+        }
+
+        System.out.println("Total account balance:");
+        double totalBalance = admin.getTotal(openAccounts);
+        System.out.println(totalBalance);
+        
+        System.out.println("Average account balance:");
+        double average = admin.getAverage(openAccounts);
+        System.out.println(average);
     }
 
     public void tellerMenu() {
